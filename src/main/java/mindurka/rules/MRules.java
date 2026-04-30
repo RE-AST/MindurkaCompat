@@ -76,7 +76,6 @@ public class MRules {
             }
             else {
                 gamemode = factory.create(rc);
-                gamemode.dataFixer();
             }
         }
 

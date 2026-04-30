@@ -1,5 +1,6 @@
 package mindurka.ui;
 
+import arc.Core;
 import arc.files.Fi;
 import arc.graphics.Pixmap;
 import arc.struct.Seq;
@@ -12,6 +13,8 @@ import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.editor.MapEditor;
 import mindustry.game.Rules;
+import mindustry.gen.Building;
+import mindustry.gen.Groups;
 import mindustry.io.MapIO;
 import mindustry.maps.Map;
 import mindustry.mod.DataPatcher;
@@ -116,6 +119,10 @@ public class OMapEditor extends MapEditor {
         }
 
         loading = false;
+
+        if (MVars.rules.originalPatchVer < 7) Core.app.post(() -> {
+            Groups.build.each(Building::heal);
+        });
     }
 
     public void OBeginEdit(Pixmap pixmap) {

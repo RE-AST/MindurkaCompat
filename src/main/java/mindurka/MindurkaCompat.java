@@ -2,6 +2,7 @@ package mindurka;
 
 import arc.Core;
 import arc.Events;
+import arc.scene.ui.layout.Table;
 import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.Reflect;
@@ -9,7 +10,9 @@ import mindurka.rules.MRules;
 import mindurka.util.Report;
 import mindustry.Vars;
 import mindustry.game.EventType;
+import mindustry.gen.Icon;
 import mindustry.mod.Mods;
+import mindustry.ui.Styles;
 
 import java.nio.ByteBuffer;
 
@@ -28,7 +31,11 @@ public class MindurkaCompat {
 
         Events.on(EventType.WorldLoadEndEvent.class, event -> {
             MVars.rules = new MRules(Vars.state.rules, Vars.world.width(), Vars.world.height());
-            if (MVars.rules.gamemode() != null && !MVars.mapEditor.isLoading() && !Vars.net.active()) MVars.rules.gamemode().onStart();
+            if (MVars.rules.gamemode() != null && !MVars.mapEditor.isLoading() && (!Vars.net.active() || Vars.net.server())) {
+                Log.info("Running local bullshit NOW");
+                MVars.rules.gamemode().dataFixer();
+                MVars.rules.gamemode().onStart();
+            }
         });
 
         Events.on(EventType.ClientLoadEvent.class, event -> {
@@ -79,6 +86,12 @@ public class MindurkaCompat {
                     return;
                 }
                 Vars.world.tile(x, y).setPackedData(data);
+            });
+
+            Vars.ui.settings.shown(() -> {
+                Table menu = Reflect.get(Vars.ui.settings, "menu");
+
+                menu.button("@settings.mindurka", Icon.editor, Styles.flatt, Vars.iconMed, MVars.ui.mdSettings::show).marginLeft(8f).row();
             });
         });
     }

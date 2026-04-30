@@ -17,6 +17,7 @@ import mindustry.core.NetClient;
 import mindustry.core.Version;
 import mindustry.gen.Call;
 import mindustry.gen.ClientBinaryPacketReliableCallPacket;
+import mindustry.gen.SetFloorCallPacket;
 import mindustry.net.Net;
 import mindustry.net.Packet;
 import mindustry.net.Packets;
@@ -68,6 +69,17 @@ public class Protocol {
         }
     }
 
+    private static class OSetFloorCallPacket extends SetFloorCallPacket {
+        @Override
+        public void handleClient() {
+            try {
+                super.handleClient();
+            } catch (Exception e) {
+                Log.warn("Failed to set floor: tile=("+(tile == null ? "null" : (tile.x + ":" + tile.y))+"), floor="+(floor == null ? "null" : floor.name)+", overlay="+(overlay == null ? "null" : overlay.name));
+            }
+        }
+    }
+
     private static final String encryptionScheme = "RSA";
     private static final ReusableByteOutStream byteStream = new ReusableByteOutStream(1024);
     private static final DataOutputStream dataStream = new DataOutputStream(byteStream);
@@ -80,11 +92,16 @@ public class Protocol {
             ObjectIntMap<Class<?>> packetToId = Reflect.get(Net.class, null, "packetToId");
             Seq<Class<?>> packetClasses = Reflect.get(Net.class, null, "packetClasses");
             Seq<Prov<?>> packetProvs = Reflect.get(Net.class, null, "packetProvs");
+
             int id = packetToId.get(ClientBinaryPacketReliableCallPacket.class, -1);
             packetToId.put(OClientBinaryPacketReliable.class, id);
             packetClasses.add(OClientBinaryPacketReliable.class);
             packetProvs.replace(packetProvs.get(id), OClientBinaryPacketReliable::new);
 
+            id = packetToId.get(SetFloorCallPacket.class, -1);
+            packetToId.put(OSetFloorCallPacket.class, id);
+            packetClasses.add(OSetFloorCallPacket.class);
+            packetProvs.replace(packetProvs.get(id), OSetFloorCallPacket::new);
         }
 
         Vars.net.handleClient(Packets.Connect.class, packet -> {

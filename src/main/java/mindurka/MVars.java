@@ -18,6 +18,7 @@ public class MVars {
     public static OCustomRulesDialog customRulesDialog;
     public static ToolOptions toolOptions = new ToolOptions();
     public static Protocol protocol = new Protocol();
+    public static Ui ui = new Ui();
 
     public static boolean patchEditorLoaded = false;
 
