@@ -29,7 +29,8 @@ public class OLoadoutDialog extends LoadoutDialog {
                 resetter().run();
                 reseed();
                 if (updater() != null) updater();
-                Reflect.<Runnable>invoke(LoadoutDialog.class, this, "setup", Util.noargs).run();
+                Runnable setup = Reflect.get(LoadoutDialog.class, this, "setup");
+                if (setup != null) setup.run();
             } catch (Throwable t) {
                 Report.withException(t);
             }
