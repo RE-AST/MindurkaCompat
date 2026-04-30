@@ -26,9 +26,8 @@ public class OLoadoutDialog extends LoadoutDialog {
 
         getChildren().get(getChildren().size - 1).clicked(() -> {
             try {
-                resetter().run();
                 reseed();
-                if (updater() != null) updater();
+                if (updater() != null) updater().run();
                 Reflect.invoke(LoadoutDialog.class, this, "setup", Util.noargs);
             } catch (Throwable t) {
                 Report.withException(t);
@@ -43,12 +42,14 @@ public class OLoadoutDialog extends LoadoutDialog {
     }
 
     private void reseed() {
-        Seq<ItemStack> originalStacks = Reflect.get(LoadoutDialog.class, this, "originalStacks");
         Boolf<Item> validator = Reflect.get(LoadoutDialog.class, this, "validator");
+        Seq<ItemStack> stacks = Reflect.get(LoadoutDialog.class, this, "stacks");
 
-        Seq<ItemStack> stacks = originalStacks.map(ItemStack::copy);
-        stacks.addAll(Vars.content.items().select(i -> validator.get(i) && !stacks.contains(stack -> stack.item == i)).map(i -> new ItemStack(i, 0)));
+        stacks.addAll(
+                Vars.content.items()
+                        .select(i -> validator.get(i) && !stacks.contains(s -> s.item == i))
+                        .map(i -> new ItemStack(i, 0))
+        );
         stacks.sort(Structs.comparingInt(s -> s.item.id));
-        Reflect.set(LoadoutDialog.class, this, "stacks", stacks);
     }
 }
