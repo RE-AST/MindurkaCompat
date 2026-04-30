@@ -146,11 +146,7 @@ public class Forts extends Gamemode {
             write.b("rules.mindurka.enable_vnw", this::enableVnw, this::enableVnw);
             write.block("rules.mindurka.expansion_block", this::expansionBlock, this::expansionBlock);
             write.f("rules.mindurka.forts.min_health", this::minHealth, this::minHealth);
-            write.loadout("rules.mindurka.passive_items", 999999, () -> {
-                passiveItems.each(stack -> {
-                });
-                return passiveItems;
-            }, i -> true, () -> {
+            write.loadout("rules.mindurka.passive_items", 999999, () -> passiveItems, i -> true, () -> {
                 passiveItems.each(stack -> stack.amount = stack.item == Items.copper || stack.item == Items.lead
                         || stack.item == Items.silicon || stack.item == Items.graphite ? 50 : 0);
                 passiveItems.each(stack -> rc.rules.tags.remove(PASSIVE_ITEMS_HEAD + stack.item.name));
