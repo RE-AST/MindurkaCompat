@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
+      uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e
       
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
@@ -30,7 +30,7 @@ jobs:
       run: ./gradlew build
 
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
+      uses: gradle/actions/dependency-submission@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e
 
     - name: Purge artifacts
       uses: c-hive/gha-remove-artifacts@v1
