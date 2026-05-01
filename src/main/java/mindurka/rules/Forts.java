@@ -146,18 +146,10 @@ public class Forts extends Gamemode {
             write.b("rules.mindurka.enable_vnw", this::enableVnw, this::enableVnw);
             write.block("rules.mindurka.expansion_block", this::expansionBlock, this::expansionBlock);
             write.f("rules.mindurka.forts.min_health", this::minHealth, this::minHealth);
-            write.loadout("rules.mindurka.passive_items", 999999, () -> {
-                Seq<ItemStack> stacks = new Seq<>();
-                for (Item item : Vars.content.items()) stacks.add(new ItemStack(item, passiveItems(item)));
-                return stacks;
-            }, i -> true, () -> {
-                Seq<String> removeAll = new Seq<>(String.class);
-                rc.rules.tags.each((key, value) -> {
-                    if (Util.keyHasHeadByte(key, PASSIVE_ITEMS_HEAD)) removeAll.add(key);
-                });
-                removeAll.each(rc.rules.tags::remove);
+            write.loadout("rules.mindurka.passive_items", 999999, () -> passiveItems, i -> true, () -> {
                 passiveItems.each(stack -> stack.amount = stack.item == Items.copper || stack.item == Items.lead
                         || stack.item == Items.silicon || stack.item == Items.graphite ? 50 : 0);
+                passiveItems.each(stack -> rc.rules.tags.remove(PASSIVE_ITEMS_HEAD + stack.item.name));
             }, () -> {
                 passiveItems.each(stack -> rc.rules.tags.put(PASSIVE_ITEMS_HEAD+stack.item.name, Integer.toString(stack.amount)));
             }, () -> {});
