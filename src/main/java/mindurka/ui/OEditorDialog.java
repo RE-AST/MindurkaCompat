@@ -787,13 +787,15 @@ public class OEditorDialog extends MapEditorDialog {
                     "@editor.importimage", "@editor.importimage.description", Icon.fileImage, (Runnable)() ->
                             Vars.platform.showFileChooser(true, "png", file ->
                                     Vars.ui.loadAnd(() -> {
+                                        Pixmap pixmap = null;
                                         try{
-                                            Pixmap pixmap = new Pixmap(file);
+                                            pixmap = new Pixmap(file);
                                             editor.OBeginEdit(pixmap);
-                                            pixmap.dispose();
                                         }catch(Exception e){
                                             Vars.ui.showException("@editor.errorload", e);
                                             Log.err(e);
+                                        }finally{
+                                            if(pixmap != null) pixmap.dispose();
                                         }
                                     })))
             );

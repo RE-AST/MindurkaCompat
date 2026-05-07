@@ -35,6 +35,7 @@ public class OCustomRulesDialog extends CustomRulesDialog {
     private RevealedContentDialog<Block> revealedBlocks = new RevealedContentDialog<>("@revealedblocks", ContentType.block, b -> !b.name.startsWith("tmp-"));
     private BannedContentDialog<UnitType> bannedUnits = new BannedContentDialog<>("@bannedunits", ContentType.unit, u -> true);
     private EnvDialog envDialog = new EnvDialog();
+    private PlanetBackgroundDialog backgroundDialog = new PlanetBackgroundDialog();
     private Table main;
     private RulesWrite writeRoot;
 
@@ -181,6 +182,7 @@ public class OCustomRulesDialog extends CustomRulesDialog {
 
         write.button("rules.env", () -> envDialog.show());
         write.button("rules.weather", () -> Reflect.invoke(CustomRulesDialog.class, this, "weatherDialog", Util.noargs));
+        write.button("rules.planetbackground", () -> backgroundDialog.show());
 
         write = writeRoot.category("planet");
         write.selection("rules.title.planet", addItem -> {
