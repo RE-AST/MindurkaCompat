@@ -1,7 +1,8 @@
-name: Build artifact
+name: Check
 
 on:
-- push
+- pull_request
+- workflow_dispatch
 
 jobs:
   build:
@@ -30,23 +31,6 @@ jobs:
 
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e
-
-    - name: Purge artifacts
-      uses: c-hive/gha-remove-artifacts@v1
-      with:
-        age: 0
-
-    - name: Get New Release Tag
-      id: new-release-tag
-      run: |
-        tag=$(cat mod.json | grep "version*" | cut -d ":" -f 2,3 | tr -d \"," ")
-        echo "tag=$tag" >> $GITHUB_OUTPUT
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4.3.6
-      with:
-        name: MindurkaCompat
-        path: ./build/libs/MindurkaCompat-${{ steps.new-release-tag.outputs.tag }}.jar
 
     # - name: Create release
     #   id: create-release
