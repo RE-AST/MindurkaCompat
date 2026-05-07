@@ -96,7 +96,6 @@ public class PlanetBackgroundDialog extends BaseDialog {
         zoom = 1f;
         state.rules.planetBackground = new PlanetParams();
         params = state.rules.planetBackground;
-        updateRotation();
         setup();
     }
 
@@ -140,7 +139,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
             if (params.camPos != null && !params.camPos.isZero()) {
                 Vec3 dir = params.camPos.cpy().nor();
                 rotY = (float)Math.acos(dir.y) * Mathf.radDeg;
-                rotX = Mathf.atan2(dir.z, dir.x) * Mathf.radDeg;
+                rotX = Mathf.mod(Mathf.atan2(dir.z, dir.x) * Mathf.radDeg, 360f);
             }
         }
 
