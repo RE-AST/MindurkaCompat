@@ -459,7 +459,6 @@ public class Forts extends Gamemode {
             if (MVars.rules.originalPatchVer < 7) {
                 Vars.state.rules.bannedUnits.remove(UnitTypes.retusa);
                 Vars.state.rules.bannedBlocks.remove(Blocks.overflowGate);
-                Vars.state.rules.bannedBlocks.remove(Blocks.coreShard);
                 Vars.state.rules.unitPayloadUpdate = true;
             }
         }

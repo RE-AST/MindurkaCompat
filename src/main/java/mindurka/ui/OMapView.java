@@ -322,6 +322,7 @@ public class OMapView extends MapView {
     }
 
     public void logScaleBy(float dy) {
+        dy *= Core.settings.getInt("mindurka.zoomsensitivity", 100) / 100f;
         float linearZoom = Mathf.log2(zoom);
         linearZoom -= dy;
         if (linearZoom >= 10f) linearZoom = 10f;
