@@ -254,7 +254,57 @@ public class OMapEditor extends MapEditor {
 
     @Override
     public void resize(int width, int height, int shiftX, int shiftY) {
-        super.resize(width, height, shiftX, shiftY);
+        clearOp();
+
+        Tiles previous = Vars.world.tiles;
+        int offsetX = (width() - width) / 2 - shiftX, offsetY = (height() - height) / 2 - shiftY;
+        loading = true;
+
+        Vars.world.clearBuildings();
+
+        Tiles tiles = Vars.world.tiles = new Tiles(width, height);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int px = offsetX + x, py = offsetY + y;
+                if (previous.in(px, py)) {
+                    tiles.set(x, y, previous.getn(px, py));
+                    Tile tile = tiles.getn(x, y);
+
+                    Object config = null;
+                    if (tile.build != null && tile.isCenter()) {
+                        config = tile.build.config();
+                    }
+
+                    tile.x = (short) x;
+                    tile.y = (short) y;
+
+                    if (tile.build != null && tile.isCenter()) {
+                        tile.build.x = x * Vars.tilesize + tile.block().offset;
+                        tile.build.y = y * Vars.tilesize + tile.block().offset;
+
+                        if (config != null) {
+                            Object out = mindustry.entities.units.BuildPlan.pointConfig(tile.block(), config, p -> {
+                                if (!tile.build.block.ignoreResizeConfig) {
+                                    p.sub(offsetX, offsetY);
+                                }
+                            });
+                            if (out != config) {
+                                boolean prev = Vars.state.rules.editor;
+                                Vars.state.rules.editor = true;
+                                tile.build.configureAny(out);
+                                Vars.state.rules.editor = prev;
+                            }
+                        }
+                    }
+                } else {
+                    tiles.set(x, y, new EditorTile(x, y, Blocks.stone.id, 0, 0));
+                }
+            }
+        }
+
+        renderer.resize(width, height);
+        loading = false;
         MVars.rules = new MRules(Vars.state.rules, Vars.world.width(), Vars.world.height());
     }
 

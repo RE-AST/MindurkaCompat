@@ -140,12 +140,15 @@ public enum EditorTool {
 
             EditorTool.line(x1, y1, x2, y2, (x, y) -> {
                 if (x < 0 || y < 0 || x >= ctx.width() || y >= ctx.height()) return;
-                Block target = MVars.toolOptions.selectedBlock().isOverlay()
+                Block selected = MVars.toolOptions.selectedBlock();
+                boolean isBlock = !selected.isOverlay() && !selected.isFloor();
+                Block target = selected.isOverlay()
                         ? ctx.overlay(x, y)
-                        : MVars.toolOptions.selectedBlock().isFloor()
+                        : selected.isFloor()
                         ? ctx.floor(x, y)
                         : ctx.block(x, y);
-                if (ctx.block(x, y) == MVars.toolOptions.selectedBlock()) return;
+                mindustry.game.Team targetTeam = isBlock ? ctx.team(x, y) : null;
+                if (ctx.block(x, y) == selected && (!isBlock || ctx.team(x, y) == MVars.toolOptions.team())) return;
 
                 points.add(Util.packxy(x2, y2));
 
@@ -155,12 +158,14 @@ public enum EditorTool {
                     int py = Util.unpacky(point);
                     if (bits.toggled(px, py)) continue;
                     if (px < 0 || py < 0 || px >= ctx.width() || py >= ctx.height()) continue;
-                    if ((MVars.toolOptions.selectedBlock().isOverlay()
+                    Block at = selected.isOverlay()
                             ? ctx.overlay(px, py)
-                            : MVars.toolOptions.selectedBlock().isFloor()
+                            : selected.isFloor()
                             ? ctx.floor(px, py)
-                            : ctx.block(px, py)) != target) continue;
-                    ctx.setAny(px, py, MVars.toolOptions.selectedBlock());
+                            : ctx.block(px, py);
+                    if (at != target) continue;
+                    if (isBlock && ctx.team(px, py) != targetTeam) continue;
+                    ctx.setAny(px, py, selected);
                     bits.enable(px, py);
 
                     points.add(Util.packxy(px + 1, py));

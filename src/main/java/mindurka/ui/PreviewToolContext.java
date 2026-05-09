@@ -99,6 +99,13 @@ public class PreviewToolContext implements ToolContext {
     }
 
     @Override
+    public Team team(int x, int y) {
+        Tile tile = Vars.world.tile(x, y);
+        if (tile == null) return Team.derelict;
+        return tile.team();
+    }
+
+    @Override
     public int width() {
         return Vars.world.width();
     }

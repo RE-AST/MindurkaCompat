@@ -169,9 +169,9 @@ public class FortsPlotKindSquare extends FortsPlotKind {
         public void writeTeamRules(Team team, RulesWrite write) {
             write.button("rules.mindurka.forts.plot.schematic", () -> {
                 MVars.mapView.editorAction = new SchematicEditorAction(
-                        wallsSize() * 2 + size, wallsSize() * 2 + size, scheme -> {
-                    plotSchematic(team, scheme);
-                });
+                        wallsSize() * 2 + size, wallsSize() * 2 + size,
+                        scheme -> plotSchematic(team, scheme)
+                );
                 MVars.customRulesDialog.hide();
             });
         }

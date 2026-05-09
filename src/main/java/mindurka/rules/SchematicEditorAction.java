@@ -6,7 +6,6 @@ import arc.graphics.g2d.Lines;
 import arc.math.geom.Point2;
 import arc.math.geom.Vec2;
 import arc.scene.ui.layout.Scl;
-import lombok.RequiredArgsConstructor;
 import mindurka.ui.OMapView;
 import mindurka.ui.SpecialEditorAction;
 import mindurka.util.FormatException;
@@ -14,13 +13,32 @@ import mindurka.util.Schematic;
 import mindustry.Vars;
 import mindustry.graphics.Pal;
 
-@RequiredArgsConstructor
 public class SchematicEditorAction implements SpecialEditorAction {
-    // TODO: Make it configurable.
-    private static final Schematic.Options OPTIONS = new Schematic.Options().skipEmpty().skipAir().skipBuildings();
-
     private final int width, height;
     private final Cons<Schematic> accepted;
+    private final Schematic.Options options;
+
+    public SchematicEditorAction(int width, int height, Cons<Schematic> accepted) {
+        Schematic.Options opts = new Schematic.Options();
+        opts.skipEmpty = true;
+        opts.skipAir = true;
+        opts.skipBuildings = true;
+        this.width = width;
+        this.height = height;
+        this.accepted = accepted;
+        this.options = opts;
+    }
+
+    public SchematicEditorAction(int width, int height, Cons<Schematic> accepted, Schematic.Options options) {
+        this.width = width;
+        this.height = height;
+        this.accepted = accepted;
+        this.options = options;
+    }
+
+    public Schematic.Options getOptions() {
+        return options;
+    }
 
     @Override
     public boolean clicked(OMapView view, float mouseX, float mouseY) {
@@ -30,7 +48,7 @@ public class SchematicEditorAction implements SpecialEditorAction {
                 || p.y >= Vars.world.height() - height) return false;
         Schematic scheme;
         try {
-            scheme = Schematic.of(Vars.world.tiles, p.x, p.y, width, height, OPTIONS);
+            scheme = Schematic.of(Vars.world.tiles, p.x, p.y, width, height, options);
         } catch (FormatException e) {
             throw new RuntimeException("Unreachable!", e);
         }
