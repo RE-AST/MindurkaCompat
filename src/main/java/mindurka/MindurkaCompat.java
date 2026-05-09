@@ -31,8 +31,8 @@ public class MindurkaCompat {
 
         Events.on(EventType.WorldLoadEndEvent.class, event -> {
             MVars.rules = new MRules(Vars.state.rules, Vars.world.width(), Vars.world.height());
-            if (MVars.rules.gamemode() != null && !MVars.mapEditor.isLoading() && (!Vars.net.active() || Vars.net.server())) {
-                Log.info("Running local bullshit NOW");
+            if (MVars.rules.gamemode() != null && (!Core.settings.getBool("mindurka.enableeditor", true) ||
+                    !MVars.mapEditor.isLoading()) && (!Vars.net.active() || Vars.net.server())) {
                 MVars.rules.gamemode().dataFixer();
                 MVars.rules.gamemode().onStart();
             }
@@ -43,7 +43,7 @@ public class MindurkaCompat {
             MVars.patchEditorLoaded = patchEditor != null && patchEditor.enabled();
 
             MIcons.load();
-            if (MVars.patchEditorLoaded) {
+            if (MVars.patchEditorLoaded && Core.settings.getBool("mindurka.integrations.patcheditor", true)) {
                 // MindurkaCompat MUST apply patches last for consistent results.
                 // Or does that mean patch editor goes last? Who knows!
                 Core.app.post(() -> Core.app.post(() -> {
