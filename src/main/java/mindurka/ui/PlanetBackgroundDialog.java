@@ -98,7 +98,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button) {
-                if (state.rules.planetBackground == null || button != KeyCode.mouseRight) return false;
+                if (!hasBackground() || button != KeyCode.mouseRight) return false;
                 lastX = x;
                 lastY = y;
                 dragging = true;
@@ -112,23 +112,16 @@ public class PlanetBackgroundDialog extends BaseDialog {
 
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                if (!dragging || state.rules.planetBackground == null) return;
+                if (!dragging || !hasBackground()) return;
                 float dx = x - lastX;
                 float dy = y - lastY;
                 lastX = x;
                 lastY = y;
-
-                rotX = Mathf.mod(rotX + dx * DRAG_SPEED, 360f);
-                rotY = Mathf.clamp(rotY + dy * DRAG_SPEED, 1f, 179f);
-                updateRotation();
-            }
-
-            @Override
-            public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
-                if (state.rules.planetBackground == null) return false;
-                zoom = Mathf.clamp(zoom * (1f + amountY * SCROLL_SPEED), 0.1f, 10f);
-                updateRotation();
-                return true;
+                if (!textureMode) {
+                    rotX = Mathf.mod(rotX + dx * DRAG_SPEED, 360f);
+                    rotY = Mathf.clamp(rotY + dy * DRAG_SPEED, 1f, 179f);
+                }
+                updateParams();
             }
         });
 
@@ -154,9 +147,12 @@ public class PlanetBackgroundDialog extends BaseDialog {
     }
 
     private void addTextureBackground() {
-        state.rules.planetBackground = null;
+        if (state.rules.planetBackground == null) {
+            state.rules.planetBackground = new PlanetParams();
+        }
         state.rules.backgroundTexture = savedTexture != null && !savedTexture.isEmpty() ? savedTexture : "";
-        params = null;
+        params = state.rules.planetBackground;
+        zoom = params.zoom > 0f ? params.zoom : 1f;
         textureMode = true;
         PlanetBackgroundDrawer.update();
         setup();
@@ -175,7 +171,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
     private void addPlanetButton(Planet planet, Table tb, BaseDialog dialog) {
         tb.button(planet.localizedName, Icon.planet, Styles.togglet, () -> {
             params.planet = planet;
-            updateRotation();
+            updateParams();
             dialog.hide();
         }).marginLeft(14f).padBottom(5f).width(220f).height(55f)
           .checked(params.planet == planet)
@@ -494,16 +490,19 @@ public class PlanetBackgroundDialog extends BaseDialog {
     private void setup() {
         params = state.rules.planetBackground;
 
-        if (params != null) {
+        if (state.rules.backgroundTexture != null && !state.rules.backgroundTexture.isEmpty()) {
+            textureMode = true;
+        } else if (params != null) {
             textureMode = false;
-            zoom = params.zoom;
-            if (params.camPos != null && !params.camPos.isZero()) {
+        }
+
+        if (params != null) {
+            zoom = params.zoom > 0f ? params.zoom : 1f;
+            if (!textureMode && params.camPos != null && !params.camPos.isZero()) {
                 Vec3 dir = params.camPos.cpy().nor();
                 rotY = (float)Math.acos(dir.y) * Mathf.radDeg;
                 rotX = Mathf.mod(Mathf.atan2(dir.z, dir.x) * Mathf.radDeg, 360f);
             }
-        } else if (state.rules.backgroundTexture != null) {
-            textureMode = true;
         }
 
         descriptionRow.visible = !textureMode;
@@ -526,31 +525,46 @@ public class PlanetBackgroundDialog extends BaseDialog {
             }
         }
 
-        updateRotation();
+        updateParams();
     }
 
-    private void updateRotation() {
+    private void updateParams() {
         PlanetParams p = state.rules.planetBackground;
-        if (p == null) return;
-        p.camPos = new Vec3(
-            Mathf.cosDeg(rotX) * Mathf.sinDeg(rotY),
-            Mathf.cosDeg(rotY),
-            Mathf.sinDeg(rotX) * Mathf.sinDeg(rotY)
-        );
-        p.zoom = zoom;
+        if (p != null) {
+            if (!textureMode) {
+                p.camPos = new Vec3(
+                    Mathf.cosDeg(rotX) * Mathf.sinDeg(rotY),
+                    Mathf.cosDeg(rotY),
+                    Mathf.sinDeg(rotX) * Mathf.sinDeg(rotY)
+                );
+            }
+            p.zoom = zoom;
+        }
         PlanetBackgroundDrawer.update();
     }
 
     @Override
+    public void act(float delta) {
+        super.act(delta);
+        if (!hasBackground() || textureMode) return;
+        float scroll = Core.input.axis(KeyCode.scroll);
+        if (scroll != 0f) {
+            zoom = Mathf.clamp(zoom * (1f - scroll * SCROLL_SPEED), 0.1f, 10f);
+            updateParams();
+        }
+    }
+
+    @Override
     public void draw() {
-        Texture tex = params != null ? PlanetBackgroundDrawer.draw() : null;
-        if (tex != null) {
+        Texture planetTex = (!textureMode && params != null) ? PlanetBackgroundDrawer.draw() : null;
+
+        if (planetTex != null) {
             float drawSize = Math.max(Core.graphics.getWidth(), Core.graphics.getHeight());
             Draw.rect(
-                Draw.wrap(tex),
-                Core.graphics.getWidth()  / 2f,
+                Draw.wrap(planetTex),
+                Core.graphics.getWidth() / 2f,
                 Core.graphics.getHeight() / 2f,
-                drawSize, -drawSize
+                drawSize, drawSize
             );
             Draw.flush();
         } else {

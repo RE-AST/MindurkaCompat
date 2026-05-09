@@ -21,7 +21,7 @@ public class PlanetBackgroundDrawer {
     }
 
     public static @Nullable Texture draw() {
-        if (state.rules.planetBackground == null) {
+        if (state.rules.planetBackground == null || (state.rules.backgroundTexture != null && !state.rules.backgroundTexture.isEmpty())) {
             dispose();
             return null;
         }
