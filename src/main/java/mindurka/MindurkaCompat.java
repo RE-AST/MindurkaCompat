@@ -49,7 +49,8 @@ public class MindurkaCompat {
                 Core.app.post(() -> Core.app.post(() -> {
                     Injects.load();
                     try {
-                        Class<?> eui = Class.forName("MinRi2.PatchEditor.ui.EUI");
+                        String pkg = patchEditor.main.getClass().getPackage().getName();
+                        Class<?> eui = Class.forName(pkg + ".ui.EUI");
                         try {
                             Reflect.invoke(eui, null, "addUI", Util.noargs);
                         } catch (Exception ignored) {
