@@ -1,5 +1,6 @@
 package mindurka;
 
+import arc.Core;
 import mindurka.rules.FortsPlotKind;
 import mindurka.rules.Gamemode;
 import mindurka.ui.OCustomRulesDialog;
@@ -78,12 +79,15 @@ public class Injects {
         Gamemode.init();
         FortsPlotKind.init();
 
-        MVars.oldMapView = Vars.ui.editor.getView();
+        if (Core.settings.getBool("mindurka.enableeditor", true)) {
+            MVars.oldMapView = Vars.ui.editor.getView();
 
-        OMapEditor.inject();
-        MVars.mapEditor = (OMapEditor) Vars.editor;
-        Vars.ui.editor = MVars.editorDialog = new OEditorDialog(MVars.mapEditor, Vars.ui.editor);
-        OCustomRulesDialog.inject();
-        OMobileInput.inject();
+            OMapEditor.inject();
+            MVars.mapEditor = (OMapEditor) Vars.editor;
+            Vars.ui.editor = MVars.editorDialog = new OEditorDialog(MVars.mapEditor, Vars.ui.editor);
+            OCustomRulesDialog.inject();
+        }
+        if (Core.settings.getBool("mindurka.enableinput", true))
+            OMobileInput.inject();
     }
 }
