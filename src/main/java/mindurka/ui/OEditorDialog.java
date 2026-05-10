@@ -378,7 +378,6 @@ public class OEditorDialog extends MapEditorDialog {
                     grid.update(() -> grid.setChecked(view.isGrid()));
 
                     addMode.get(EditorMode.zoom);
-                    addMode.get(EditorMode.eraser);
                     tools.row();
                     addTool.get(EditorTool.pencil);
                     addTool.get(EditorTool.line);
