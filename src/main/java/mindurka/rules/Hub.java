@@ -1,5 +1,6 @@
 package mindurka.rules;
 
+import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.GlyphLayout;
@@ -107,14 +108,48 @@ public class Hub extends Gamemode {
 
         @Override
         public void drawEditorGuides() {
+            float lineWidth = Core.settings.getInt("mindurka.guideslinewidth", 1);
+            if (Core.settings.getBool("mindurka.guidesoutline", false)) {
+                for (int i = 0; i < servers.size; i++) {
+                    Server server = servers.items[i];
+
+                    // Draw.reset();
+                    Vec2 v = MVars.mapView.unproject(server.x, server.y);
+                    float sx = v.x;
+                    float sy = v.y;
+                    v = MVars.mapView.unproject(server.x + server.size, server.y + server.size);
+
+                    Lines.stroke(Scl.scl(lineWidth + 2));
+                    Draw.color(Color.black);
+                    Lines.rect(sx - 1, sy - 1, v.x - sx + 2, v.y - sy + 2);
+
+                    GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
+                    // If there's a better way of doing this I may consider it.
+                    Fonts.outline.getData().setScale(0.25f * Scl.scl(20) / Vars.renderer.camerascale);
+                    layout.setText(Fonts.outline, server.name);
+
+                    float x = (v.x + sx) / 2 + layout.width / 2;
+                    float y = (v.y + sy) / 2 + layout.height / 2;
+
+                    Fonts.outline.draw(server.name, x, y, 0, 0, false);
+
+                    Pools.free(layout);
+                    Fonts.outline.getData().setScale(1f);
+                    Fonts.outline.setColor(Color.white);
+                }
+                Draw.reset();
+            }
+
             for (int i = 0; i < servers.size; i++) {
                 Server server = servers.items[i];
 
-                Draw.reset();
+                // Draw.reset();
                 Vec2 v = MVars.mapView.unproject(server.x, server.y);
                 float sx = v.x;
                 float sy = v.y;
                 v = MVars.mapView.unproject(server.x + server.size, server.y + server.size);
+
+                Lines.stroke(Scl.scl(lineWidth));
                 Draw.color(Color.white);
                 Lines.rect(sx, sy, v.x - sx, v.y - sy);
 
@@ -132,6 +167,8 @@ public class Hub extends Gamemode {
                 Fonts.outline.getData().setScale(1f);
                 Fonts.outline.setColor(Color.white);
             }
+            Draw.reset();
+            Lines.stroke(1f);
         }
     }
 

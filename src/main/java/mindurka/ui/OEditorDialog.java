@@ -14,6 +14,7 @@ import arc.scene.event.Touchable;
 import arc.scene.event.VisibilityListener;
 import arc.scene.style.Drawable;
 import arc.scene.style.TextureRegionDrawable;
+import arc.scene.ui.Dialog;
 import arc.scene.ui.ImageButton;
 import arc.scene.ui.Label;
 import arc.scene.ui.ScrollPane;
@@ -70,6 +71,7 @@ public class OEditorDialog extends MapEditorDialog {
     private final OMapView view;
     private final OMapEditor editor;
     private MapInfoDialog infoDialog;
+    private MapResizeDialog resizeDialog;
     public boolean loading = false;
     private final MapLoadDialog loadDialog = new MapLoadDialog(map -> Vars.ui.loadAnd(() -> {
         try {
@@ -98,7 +100,14 @@ public class OEditorDialog extends MapEditorDialog {
         super();
 
         this.editor = editor;
+        resizeDialog = Reflect.get(MapEditorDialog.class, this, "resizeDialog");
+
         Reflect.set(MapEditorDialog.class, this, "loadDialog", loadDialog);
+        resizeDialog.hidden(() -> {
+            Reflect.set(MapResizeDialog.class, resizeDialog, "shiftX", 0);
+            Reflect.set(MapResizeDialog.class, resizeDialog, "shiftY", 0);
+        });
+
         view = (MVars.mapView = new OMapView());
 
         background(Styles.black);
@@ -151,7 +160,7 @@ public class OEditorDialog extends MapEditorDialog {
 
         buildMenu();
 
-        // Without this patch editor kills itself.
+        // Patch editor compatibility.
         infoDialog = Reflect.get(MapEditorDialog.class, this, "infoDialog");
     }
 
@@ -753,7 +762,7 @@ public class OEditorDialog extends MapEditorDialog {
             t.button("@editor.savemap", Icon.save, this::save);
 
             t.button("@editor.mapinfo", Icon.pencil, () -> {
-                Reflect.<MapInfoDialog>get(MapEditorDialog.class, this, "infoDialog").show();
+                infoDialog.show();
                 menu.hide();
             });
 

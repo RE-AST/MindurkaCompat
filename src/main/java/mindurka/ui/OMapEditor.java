@@ -123,6 +123,8 @@ public class OMapEditor extends MapEditor {
         if (MVars.rules.originalPatchVer < 7) Core.app.post(() -> {
             Groups.build.each(Building::heal);
         });
+
+        MVars.editorDialog.build();
     }
 
     public void OBeginEdit(Pixmap pixmap) {
@@ -255,6 +257,19 @@ public class OMapEditor extends MapEditor {
     @Override
     public void resize(int width, int height, int shiftX, int shiftY) {
         super.resize(width, height, shiftX, shiftY);
+
+        for (int i = 0; i < width * height; i++) {
+            Tile tile = Vars.world.tiles.geti(i);
+            if (tile instanceof mindustry.editor.EditorTile) {
+                Tile newTile = new EditorTile(tile.x, tile.y, tile.floorID(), tile.overlayID(), tile.blockID());
+                newTile.data = tile.data;
+                newTile.extraData = tile.extraData;
+                newTile.floorData = tile.floorData;
+                newTile.overlayData = tile.overlayData;
+                Vars.world.tiles.seti(i, newTile);
+            }
+        }
+
         MVars.rules = new MRules(Vars.state.rules, Vars.world.width(), Vars.world.height());
     }
 
