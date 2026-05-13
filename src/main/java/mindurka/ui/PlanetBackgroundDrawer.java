@@ -36,7 +36,7 @@ public class PlanetBackgroundDrawer {
 
         if (changed || resized || backgroundBuffer.resizeCheck(size, size)) {
             changed = false;
-
+            
             backgroundBuffer.begin(Color.clear);
 
             PlanetParams params = state.rules.planetBackground;
