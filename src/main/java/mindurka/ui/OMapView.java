@@ -332,8 +332,8 @@ public class OMapView extends MapView {
         dy *= Core.settings.getInt("mindurka.zoomsensitivity", 100) / 100f;
         float linearZoom = Mathf.log2(zoom);
         linearZoom -= dy;
-        if (linearZoom >= 10f) linearZoom = 10f;
-        if (linearZoom <= 0.01f) linearZoom = 0.01f;
+        if (linearZoom >= 20f) linearZoom = 20f;
+        if (linearZoom < -10) linearZoom = -10;
         zoom = Mathf.pow(2f, linearZoom);
     }
 

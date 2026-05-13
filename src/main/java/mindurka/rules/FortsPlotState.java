@@ -1,7 +1,12 @@
 package mindurka.rules;
 
 import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
+import arc.scene.style.Drawable;
+import arc.scene.style.TextureRegionDrawable;
+import mindustry.content.StatusEffects;
 import mindustry.game.Team;
+import mindustry.gen.Icon;
 
 // I did have fun with those yes
 public enum FortsPlotState {
@@ -27,12 +32,20 @@ public enum FortsPlotState {
     ;
 
     private static final Color[] stroke = new Color[] {
-            new Color(0x555555ff),
-            new Color(0xe0a8a2ff),
-            new Color(0xe0a8a2ff),
+            Color.black,
+            new Color(0x98DD99ff),
+            new Color(0xF7C66Fff),
             Color.cyan,
-            new Color(0xffffffff),
-            new Color(0xccccccaa),
+            new Color(0xD62149ff),
+            Color.white,
+    };
+    private static final Color[] outlineColor = new Color[] {
+            Color.white,
+            Color.black,
+            Color.black,
+            Color.black,
+            Color.black,
+            Color.black,
     };
     private static final Color[] fill = new Color[] {
             Color.clear,
@@ -40,7 +53,7 @@ public enum FortsPlotState {
             null,
             null,
             null,
-            Color.clear,
+            null,
     };
 
     @Override
@@ -49,6 +62,7 @@ public enum FortsPlotState {
         return name();
     }
 
+    public Color outline() { return outlineColor[ordinal()]; }
     public Color stroke() { return stroke[ordinal()]; }
     public Color fill(Color copyTo, Team team) {
         Color color = copyTo == null ? new Color() : copyTo;

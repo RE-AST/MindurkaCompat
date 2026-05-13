@@ -34,6 +34,9 @@ public class MindurkaSettingsDialog extends Dialog {
 
         settingsTable.sliderPref("mindurka.zoomsensitivity", 100, 1, 200, x -> x + "%");
 
+        settingsTable.sliderPref("mindurka.guideslinewidth", 1, 1, 20, x -> x + "px");
+        settingsTable.checkPref("mindurka.guidesoutline", false);
+
         top();
 
         cont.row();

@@ -1,5 +1,6 @@
 package mindurka.rules;
 
+import arc.Core;
 import arc.func.Func;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -126,6 +127,9 @@ public class FortsRectangularStates {
     }
 
     public void drawEditorGuides() {
+        float lineWidth = Core.settings.getInt("mindurka.guideslinewidth", 1);
+        boolean outline = Core.settings.getBool("mindurka.guidesoutline", false);
+
         Color stroke;
         for (int i = 0; i < plotsX; i++) for (int o = 0; o < plotsY; o++) {
             int x = startX + jX * i;
@@ -146,8 +150,16 @@ public class FortsRectangularStates {
                 float h = s.y - sy;
                 Fill.rect(sx + w / 2, sy + h / 2, w, h);
             }
+
+            if (outline) {
+                Draw.color(state.outline());
+                Lines.stroke(Scl.scl(lineWidth + 2));
+                Lines.rect(sx - 1, sy - 1, s.x - sx + 2, s.y - sy + 2);
+                Draw.reset();
+            }
+
             Draw.color(stroke);
-            Lines.stroke(Scl.scl(1f));
+            Lines.stroke(Scl.scl(lineWidth));
             Lines.rect(sx, sy, s.x - sx, s.y - sy);
             Draw.reset();
         }

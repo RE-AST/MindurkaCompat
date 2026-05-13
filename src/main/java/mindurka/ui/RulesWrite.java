@@ -72,6 +72,11 @@ public class RulesWrite {
         this.filter = filter.toLowerCase();
     }
 
+    /** Add corrective space because Mindustry is stupid. */
+    private Cell<Table> correctiveSpace() {
+        return root.table().width(20);
+    }
+
     private boolean shouldAdd(String tlkey) {
         // TODO: Use a better algorithm.
         if (!Core.bundle.get(tlkey).toLowerCase().contains(filter)) return false;
@@ -88,8 +93,8 @@ public class RulesWrite {
 
                 String name = Core.bundle.get("rules.title." + cursor.categoryNameToAdd);
 
-                cursor.parent.root.add(name).color(Pal.accent).padTop(20).padBottom(-3).pad(6).fillX().left().row();
-                cursor.parent.root.image().color(Pal.accent).height(3f).padBottom(20).pad(6).fillX().left().row();
+                cursor.parent.root.add(name).color(Pal.accent).pad(6).padLeft(20).fillX().left().row();
+                cursor.parent.root.image().color(Pal.accent).height(3f).pad(6).padLeft(20).padRight(20).fillX().row();
                 cursor.parent.root.add(cursor.root).fillX().pad(0);
                 cursor.parent.root.row();
 
@@ -117,6 +122,7 @@ public class RulesWrite {
     public <T> void selection(String tlKey, Cons<AddItem<T>> addItem, Cons<T> onClick, T def) {
         if (!shouldAdd(tlKey)) return;
 
+        correctiveSpace();
         root.table(Tex.button, t -> {
             t.margin(10f);
             ButtonGroup<?> group = new ButtonGroup<>();
@@ -141,11 +147,13 @@ public class RulesWrite {
                     buttons.add(button[0].get());
                 }
             });
-        }).left().pad(6).fill(false).expand(false, false).row();
+        }).left().pad(6).fill(false).expand(false, false);
+        correctiveSpace().row();
     }
     public <T> void selectionRaw(String key, Cons<AddItem<T>> addItem, Cons<T> onClick, T def) {
         if (!shouldAdd(key)) return;
 
+        correctiveSpace();
         root.table(Tex.button, t -> {
             t.margin(10f);
             ButtonGroup<?> group = new ButtonGroup<>();
@@ -169,7 +177,8 @@ public class RulesWrite {
                 if (buttons.size % 3 == 2) button[0].row();
                 buttons.add(button[0].get());
             });
-        }).left().pad(6).row();
+        }).left().pad(6);
+        correctiveSpace().row();
     }
 
     public static class BoolCtl {
@@ -186,12 +195,14 @@ public class RulesWrite {
 
         final BoolCtl ctl = new BoolCtl();
 
+        correctiveSpace();
         Cell<CheckBox> cell = root.check(Core.bundle.get(tlKey), onClick).checked(def.get())
                 .update(it -> {
                     it.setChecked(def.get());
                     it.setDisabled(!ctl.enabled.get());
                 });
-        cell.pad(6).get().left().row();
+        cell.pad(6).get().left();
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -218,6 +229,7 @@ public class RulesWrite {
         final StrCtl ctl = new StrCtl();
         ctl._prevValue = def.get();
 
+        correctiveSpace();
         Cell<Table> cell = root.table(t -> {
             t.left();
             t.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0)
@@ -237,7 +249,8 @@ public class RulesWrite {
                         }
                     }).marginTop(0).marginBottom(0).width(120f).left().get();
         }).padTop(0);
-        cell.pad(6).get().left().row();
+        cell.pad(6).get().left();
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -285,6 +298,7 @@ public class RulesWrite {
         final IntCtl ctl = new IntCtl();
         ctl._prevValue = def.get();
 
+        correctiveSpace();
         Cell<Table> cell = root.table(t -> {
             t.left();
             ctl.label = t.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0)
@@ -304,7 +318,8 @@ public class RulesWrite {
                     }).marginTop(0).marginBottom(0)
                     .valid(f -> Strings.parseInt(f) >= ctl.min && Strings.parseInt(f) <= ctl.max).width(120f).left();
         }).padTop(0);
-        cell.pad(6).get().left().row();
+        cell.pad(6).get().left();
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -331,6 +346,7 @@ public class RulesWrite {
         ctl._prevX = def.get().x;
         ctl._prevY = def.get().y;
 
+        correctiveSpace();
         Cell<Table> cell = root.table(t -> {
             t.left();
             t.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0)
@@ -345,7 +361,7 @@ public class RulesWrite {
                         int v = def.get().x;
                         if (ctl._prevX != v) { ctl._prevX = v; a.setText(v + ""); }
                     }).marginTop(0).marginBottom(0)
-                    .valid(f -> Strings.canParseInt(f)).width(80f).left();
+                    .valid(Strings::canParseInt).width(80f).left();
             t.add("  ").padLeft(2).padRight(2);
             t.field(ctl._prevY + "", s -> {
                         int v = Strings.parseInt(s);
@@ -357,9 +373,10 @@ public class RulesWrite {
                         int v = def.get().y;
                         if (ctl._prevY != v) { ctl._prevY = v; a.setText(v + ""); }
                     }).marginTop(0).marginBottom(0)
-                    .valid(f -> Strings.canParseInt(f)).width(80f).left();
+                    .valid(Strings::canParseInt).width(80f).left();
         }).padTop(0);
-        cell.pad(6).get().left().row();
+        cell.pad(6).get().left();
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -381,6 +398,7 @@ public class RulesWrite {
         final Seq<Point2> current = new Seq<>(def.get());
         final Table[] rowsTable = {null};
 
+        correctiveSpace();
         Cell<Table> outerCell = root.table(outer -> {
             outer.left();
             outer.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0)
@@ -390,7 +408,8 @@ public class RulesWrite {
                 rebuildPointRows(inner, current, ctl, def, onClick);
             }).left();
         }).padTop(0);
-        outerCell.pad(6).get().left().row();
+        outerCell.pad(6).get().left();
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -504,6 +523,7 @@ public class RulesWrite {
         final FloatCtl ctl = new FloatCtl();
         ctl._prevValue = def.get();
 
+        correctiveSpace();
         Cell<Table> cell = root.table(t -> {
             t.left();
             t.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0)
@@ -523,7 +543,8 @@ public class RulesWrite {
                     }).marginTop(0).marginBottom(0)
                     .valid(f -> Strings.parseFloat(f) >= ctl.min && Strings.parseFloat(f) <= ctl.max).width(120f).left();
         }).padTop(0);
-        cell.pad(6).padTop(0).get().left().row().marginTop(0);
+        cell.pad(6).padTop(0).get().left().marginTop(0);
+        correctiveSpace().row();
         root.row();
 
         return ctl;
@@ -541,26 +562,32 @@ public class RulesWrite {
     public void color(String tlKey, Prov<Color> def, Cons<Color> onClick) {
         if (!shouldAdd(tlKey)) return;
 
+        correctiveSpace();
         root.button(b -> {
             b.left();
             b.table(Tex.pane, in -> in.stack(new Image(Tex.alphaBg), new Image(Tex.whiteui) {{
                 update(() -> setColor(def.get()));
             }}).grow()).margin(4).size(50).padRight(10);
             b.add("@"+tlKey);
-        }, () -> Vars.ui.picker.show(def.get(), onClick)).left().width(300f).padLeft(6).row();
+        }, () -> Vars.ui.picker.show(def.get(), onClick)).left().width(300f).padLeft(6);
+        correctiveSpace().row();
     }
 
     public void button(String tlKey, Runnable click) {
         if (!shouldAdd(tlKey)) return;
 
-        root.button("@" + tlKey, click).left().width(300f).padLeft(6).row();
+        correctiveSpace();
+        root.button("@" + tlKey, click).left().width(300f).padLeft(6);
+        correctiveSpace().row();
     }
 
     public void teams(String tlKey, Cons2<Team, RulesWrite> sectionConf, Boolf<Team> enabled) {
         if (!shouldAdd(tlKey)) return;
 
         final Table table = new Table();
-        root.add(table).left().row();
+        correctiveSpace();
+        root.add(table).left();
+        correctiveSpace().row();
         table.defaults().left();
 
         class TeamData {
@@ -683,6 +710,7 @@ public class RulesWrite {
         BlockCtl ctl = new BlockCtl();
         final Table[] table = new Table[1];
 
+        correctiveSpace();
         root.button(b -> {
             b.left();
             table[0] = b.table(Tex.pane, in -> in.stack(new Image(Tex.alphaBg), new Image(new TextureRegionDrawable(def.get().uiIcon, 4f / Math.min(def.get().uiIcon.width, def.get().uiIcon.height))) {{
@@ -700,7 +728,8 @@ public class RulesWrite {
             Image image = (Image) ((Stack) (table[0].getChildren().get(0))).getChildren().get(1);
             image.setDrawable(new TextureRegionDrawable(block.uiIcon, 4f / Math.min(block.uiIcon.width, block.uiIcon.height)));
             onClick.get(block);
-        }, def.get())).left().width(300f).padLeft(6).row();
+        }, def.get())).left().width(300f).padLeft(6);
+        correctiveSpace().row();
 
         return ctl;
     }
@@ -719,6 +748,7 @@ public class RulesWrite {
         UnitCtl ctl = new UnitCtl();
         final Table[] table = new Table[1];
 
+        correctiveSpace();
         root.button(b -> {
             b.left();
             table[0] = b.table(Tex.pane, in -> in.stack(new Image(Tex.clear), new Image(new TextureRegionDrawable(def.get().uiIcon, 4f / Math.min(def.get().uiIcon.width, def.get().uiIcon.height))) {{
@@ -735,7 +765,8 @@ public class RulesWrite {
             Image image = (Image) ((Stack) (table[0].getChildren().get(0))).getChildren().get(1);
             image.setDrawable(new TextureRegionDrawable(unit.uiIcon, 4f / Math.min(unit.uiIcon.width, unit.uiIcon.height)));
             onClick.get(unit);
-        }, def.get())).left().width(300f).padLeft(6).row();
+        }, def.get())).left().width(300f).padLeft(6);
+        correctiveSpace().row();
 
         return ctl;
     }
@@ -754,6 +785,7 @@ public class RulesWrite {
         ItemCtl ctl = new ItemCtl();
         final Table[] table = new Table[1];
 
+        correctiveSpace();
         root.button(b -> {
             b.left();
             table[0] = b.table(Tex.pane, in -> in.stack(new Image(Tex.clear), new Image(new TextureRegionDrawable(def.get().uiIcon, 4f / Math.min(def.get().uiIcon.width, def.get().uiIcon.height))) {{
@@ -770,7 +802,8 @@ public class RulesWrite {
             Image image = (Image) ((Stack) (table[0].getChildren().get(0))).getChildren().get(1);
             image.setDrawable(new TextureRegionDrawable(item.uiIcon, 4f / Math.min(item.uiIcon.width, item.uiIcon.height)));
             onClick.get(item);
-        }, def.get())).left().width(300f).padLeft(6).row();
+        }, def.get())).left().width(300f).padLeft(6);
+        correctiveSpace().row();
 
         return ctl;
     }
@@ -790,6 +823,7 @@ public class RulesWrite {
         StatusCtl ctl = new StatusCtl();
         final Table[] table = new Table[1];
 
+        correctiveSpace();
         root.button(b -> {
             b.left();
             table[0] = b.table(Tex.pane, in -> in.stack(new Image(Tex.clear), new Image(new TextureRegionDrawable(def.get().uiIcon, 4f / Math.min(def.get().uiIcon.width, def.get().uiIcon.height))) {{
@@ -807,7 +841,8 @@ public class RulesWrite {
             Image image = (Image) ((Stack) (table[0].getChildren().get(0))).getChildren().get(1);
             image.setDrawable(new TextureRegionDrawable(status.uiIcon, 4f / Math.min(status.uiIcon.width, status.uiIcon.height)));
             onClick.get(status);
-        }, def.get())).left().width(300f).padLeft(6).row();
+        }, def.get())).left().width(300f).padLeft(6);
+        correctiveSpace().row();
 
         return ctl;
     }
@@ -826,6 +861,7 @@ public class RulesWrite {
         TeamCtl ctl = new TeamCtl();
         final Table[] table = new Table[1];
 
+        correctiveSpace();
         root.table(t -> {
             t.left();
             t.label(() -> "@"+tlKey);
@@ -867,7 +903,8 @@ public class RulesWrite {
             }
 
             t.add(field).width(70).pad(2);
-        }).left().padLeft(6).row();
+        }).left().padLeft(6);
+        correctiveSpace().row();
 
         return ctl;
     }
@@ -880,6 +917,7 @@ public class RulesWrite {
 
         final Table[] rowsTable = {null};
 
+        correctiveSpace();
         root.table(outer -> {
             outer.left();
             outer.add("@" + tlKey).left().padRight(5).marginTop(0).marginBottom(0);
@@ -887,7 +925,8 @@ public class RulesWrite {
                 rowsTable[0] = inner;
                 rebuildPlatformSourceRows(inner, def, onAdd, onRemove, tlKey);
             }).left();
-        }).padTop(0).pad(6).left().row();
+        }).padTop(0).pad(6).left();
+        correctiveSpace().row();
         root.row();
     }
 
@@ -949,7 +988,9 @@ public class RulesWrite {
         write.parent = this;
         write.canPlaceSpacer = canPlaceSpacer;
         write.root.left().defaults().left().pad(0);
-        root.add(write.root).fillX().left().row();
+        correctiveSpace().width(0);
+        root.add(write.root).fillX().left();
+        correctiveSpace().width(0).row();
         return write;
     }
 
@@ -968,19 +1009,23 @@ public class RulesWrite {
     public TreeNode tree(String label, Cons<RulesWrite> contents, boolean expanded) {
         final TreeNode node = new TreeNode(label, expanded);
 
+        correctiveSpace();
         root.button(label, Icon.downOpen, Styles.togglet, () -> node.shown = !node.shown)
                 .width(260).height(55).update(t -> {
                     ((Image) t.getChildren().get(1)).setDrawable(node.buttonIcon());
                     t.setChecked(node.shown);
-                }).left().padLeft(14).padBottom(2).row();
+                }).left().padLeft(14).padBottom(2);
+        correctiveSpace().row();
 
         final Table contentTable = new Table();
         contentTable.left();
         contentTable.defaults().left();
 
+        correctiveSpace();
         root.collapser(c -> {
             c.add(contentTable).padLeft(14).left().growX().row();
-        }, () -> node.shown).left().padBottom(2).fillX().row();
+        }, () -> node.shown).left().padBottom(2).fillX();
+        correctiveSpace().row();
 
         final RulesWrite child = new RulesWrite(contentTable, filter);
         contents.get(child);
@@ -1011,7 +1056,9 @@ public class RulesWrite {
         if (!shouldAdd(tlKey)) return;
 
         final Table container = new Table();
-        root.add(container).fillX().row();
+        correctiveSpace();
+        root.add(container).fillX();
+        correctiveSpace().row();
         container.defaults().left();
 
         class AddRow {

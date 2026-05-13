@@ -80,7 +80,6 @@ public class OCustomRulesDialog extends CustomRulesDialog {
                 build();
             }).padLeft(10f).size(35f);
         }).fillX().row();
-        cont.add(new Table()).width(520f).row();
         Cell<ScrollPane> paneCell = cont.pane(m -> main = m).fillX();
         writeRoot = new RulesWrite(main, "");
 
