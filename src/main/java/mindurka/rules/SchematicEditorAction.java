@@ -19,14 +19,11 @@ public class SchematicEditorAction implements SpecialEditorAction {
     private final Schematic.Options options;
 
     public SchematicEditorAction(int width, int height, Cons<Schematic> accepted) {
-        Schematic.Options opts = new Schematic.Options();
-        opts.skipEmpty = true;
-        opts.skipAir = true;
-        opts.skipBuildings = true;
-        this.width = width;
-        this.height = height;
-        this.accepted = accepted;
-        this.options = opts;
+        this(width, height, accepted, new Schematic.Options() {{
+            skipEmpty = true;
+            skipAir = true;
+            skipBuildings = true;
+        }});
     }
 
     public SchematicEditorAction(int width, int height, Cons<Schematic> accepted, Schematic.Options options) {

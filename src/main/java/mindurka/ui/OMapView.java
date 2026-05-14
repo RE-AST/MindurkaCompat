@@ -225,16 +225,6 @@ public class OMapView extends MapView {
                 boolean isMain = activeTouches[0] != null && activeTouches[0].pointer == pointer;
                 removeTouch(pointer, button);
 
-                if (editorAction != null && dragging && isMain) {
-                    SpecialEditorAction prev = editorAction;
-                    editorAction = null;
-                    mousea = null;
-                    dragging = false;
-                    prev.clicked(OMapView.this, x, y);
-                    redrawPreview = true;
-                    return;
-                }
-
                 if (mousea != null) {
                     if (mousea instanceof MouseAction.TouchDrag) {
                         if (activeTouches() == 0) mousea = null;

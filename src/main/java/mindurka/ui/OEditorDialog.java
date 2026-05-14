@@ -387,6 +387,7 @@ public class OEditorDialog extends MapEditorDialog {
                     grid.update(() -> grid.setChecked(view.isGrid()));
 
                     addMode.get(EditorMode.zoom);
+                    if(Vars.mobile)addMode.get(EditorMode.eraser);
                     tools.row();
                     addTool.get(EditorTool.pencil);
                     addTool.get(EditorTool.line);
@@ -438,10 +439,10 @@ public class OEditorDialog extends MapEditorDialog {
                             ((mindurka.rules.SchematicEditorAction) view.editorAction).getOptions();
                         if (optionsTable.getChildren().isEmpty()) {
                             optionsTable.defaults().left().pad(2f);
-                            optionsTable.check(Core.bundle.get("rules.schematic.skipEmpty", "Skip empty floors"), opts.skipEmpty, v -> opts.skipEmpty = v).row();
-                            optionsTable.check(Core.bundle.get("rules.schematic.skipAir", "Skip air blocks"), opts.skipAir, v -> opts.skipAir = v).row();
-                            optionsTable.check(Core.bundle.get("rules.schematic.skipBuildings", "Skip buildings"), opts.skipBuildings, v -> opts.skipBuildings = v).row();
-                            optionsTable.check(Core.bundle.get("rules.schematic.skipNoOverlay", "Skip air overlays"), opts.skipNoOverlay, v -> opts.skipNoOverlay = v).row();
+                            optionsTable.check(Core.bundle.get("schematic.skipEmpty", "Skip empty floors"), opts.skipEmpty, v -> opts.skipEmpty = v).row();
+                            optionsTable.check(Core.bundle.get("schematic.skipAir", "Skip air blocks"), opts.skipAir, v -> opts.skipAir = v).row();
+                            optionsTable.check(Core.bundle.get("schematic.skipBuildings", "Skip buildings"), opts.skipBuildings, v -> opts.skipBuildings = v).row();
+                            optionsTable.check(Core.bundle.get("schematic.skipNoOverlay", "Skip air overlays"), opts.skipNoOverlay, v -> opts.skipNoOverlay = v).row();
                             // TODO: Add team option.
                         }
                     } else {

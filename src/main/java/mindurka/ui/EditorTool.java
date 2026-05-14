@@ -14,6 +14,7 @@ import mindurka.Util;
 import mindurka.rules.*;
 import mindustry.Vars;
 import mindustry.content.Blocks;
+import mindustry.game.Team;
 import mindustry.type.Item;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
@@ -147,7 +148,7 @@ public enum EditorTool {
                         : selected.isFloor()
                         ? ctx.floor(x, y)
                         : ctx.block(x, y);
-                mindustry.game.Team targetTeam = isBlock ? ctx.team(x, y) : null;
+                Team targetTeam = isBlock ? ctx.team(x, y) : null;
                 if (ctx.block(x, y) == selected && (!isBlock || ctx.team(x, y) == MVars.toolOptions.team())) return;
 
                 points.add(Util.packxy(x2, y2));
