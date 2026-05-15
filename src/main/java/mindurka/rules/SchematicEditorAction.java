@@ -6,6 +6,8 @@ import arc.graphics.g2d.Lines;
 import arc.math.geom.Point2;
 import arc.math.geom.Vec2;
 import arc.scene.ui.layout.Scl;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import mindurka.ui.OMapView;
 import mindurka.ui.SpecialEditorAction;
 import mindurka.util.FormatException;
@@ -13,9 +15,12 @@ import mindurka.util.Schematic;
 import mindustry.Vars;
 import mindustry.graphics.Pal;
 
+@RequiredArgsConstructor
 public class SchematicEditorAction implements SpecialEditorAction {
     private final int width, height;
     private final Cons<Schematic> accepted;
+
+    @Getter
     private final Schematic.Options options;
 
     public SchematicEditorAction(int width, int height, Cons<Schematic> accepted) {
@@ -24,17 +29,6 @@ public class SchematicEditorAction implements SpecialEditorAction {
             skipAir = true;
             skipBuildings = true;
         }});
-    }
-
-    public SchematicEditorAction(int width, int height, Cons<Schematic> accepted, Schematic.Options options) {
-        this.width = width;
-        this.height = height;
-        this.accepted = accepted;
-        this.options = options;
-    }
-
-    public Schematic.Options getOptions() {
-        return options;
     }
 
     @Override
