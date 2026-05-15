@@ -16,6 +16,7 @@ import arc.util.Log;
 import arc.util.pooling.Pools;
 import arc.util.serialization.Jval;
 import mindurka.MVars;
+import mindurka.ui.OMapView;
 import mindurka.ui.RulesWrite;
 import mindurka.util.Schematic;
 import mindustry.Vars;
@@ -208,6 +209,7 @@ public class Castle extends Gamemode {
 
         @Override
         public void drawEditorGuides() {
+            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
             for (int i = 0; i < blocks.size; i++) {
                 Castle.CastleBlock block = blocks.items[i];
 
@@ -284,7 +286,67 @@ public class Castle extends Gamemode {
                 Fonts.outline.setColor(Color.white);
 
             }
-            // TODO: Spawns render
+            TextureRegion groundUnitIcon = content.units().find(unit -> !unit.flying && !unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            TextureRegion flyingUnitIcon = content.units().find(unit -> unit.flying && !unit.canBoost && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            TextureRegion navalUnit = content.units().find(unit -> unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            for(Point2 spawn : groundSpawn){
+                float borderX = (float) spawn.x;
+                float borderY = (float) spawn.y-6;
+                float borderX2 = (float) 1+borderX;
+                float borderY2 = 12f+borderY;
+                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
+                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
+                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
+                Draw.reset();
+                Draw.color(Color.blue);
+                Draw.scl(lineScale);
+                Lines.stroke(lineScale);
+                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
+                Draw.reset();
+                Draw.color(Color.white);
+                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
+                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
+                Draw.rect(groundUnitIcon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
+                Draw.reset();
+            }
+            for(Point2 spawn : navalSpawn){
+                float borderX = (float) spawn.x;
+                float borderY = (float) spawn.y-6;
+                float borderX2 = (float) 1+borderX;
+                float borderY2 = 12f+borderY;
+                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
+                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
+                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
+                Draw.reset();
+                Draw.color(Color.blue);
+                Lines.stroke(lineScale);
+                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
+                Draw.reset();
+                Draw.color(Color.white);
+                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
+                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
+                Draw.rect(navalUnit,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
+                Draw.reset();
+            }
+            for(Point2 spawn : airSpawn){
+                float borderX = (float) spawn.x;
+                float borderY = (float) spawn.y-6;
+                float borderX2 = (float) 1+borderX;
+                float borderY2 = 12f+borderY;
+                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
+                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
+                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
+                Draw.reset();
+                Draw.color(Color.blue);
+                Lines.stroke(lineScale);
+                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
+                Draw.reset();
+                Draw.color(Color.white);
+                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
+                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
+                Draw.rect(flyingUnitIcon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
+                Draw.reset();
+            }
         }
 
         private final ObjectIntMap<Block> blockCostMap = new ObjectIntMap<>();
