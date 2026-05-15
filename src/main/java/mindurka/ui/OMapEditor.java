@@ -266,6 +266,7 @@ public class OMapEditor extends MapEditor {
                 newTile.extraData = tile.extraData;
                 newTile.floorData = tile.floorData;
                 newTile.overlayData = tile.overlayData;
+                newTile.build = tile.build;
                 Vars.world.tiles.seti(i, newTile);
             }
         }

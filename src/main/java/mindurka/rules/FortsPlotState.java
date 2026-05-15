@@ -32,19 +32,19 @@ public enum FortsPlotState {
     ;
 
     private static final Color[] stroke = new Color[] {
-            Color.black,
-            new Color(0x98DD99ff),
-            new Color(0xF7C66Fff),
-            Color.cyan,
-            new Color(0xD62149ff),
-            Color.white,
+            new Color(0x3D3846ff),
+            new Color(0xE0B310ff),
+            new Color(0xE0B310ff),
+            new Color(0x9BE4F8ff),
+            new Color(0xC25A00ff),
+            new Color(0xCDCDCDff),
     };
     private static final Color[] outlineColor = new Color[] {
-            Color.white,
-            Color.black,
-            Color.black,
-            Color.black,
-            Color.black,
+            new Color(0xCDCDCDff),
+            new Color(0x5D2C72ff),
+            new Color(0x5D2C72ff),
+            new Color(0x2A1E13ff),
+            new Color(0x0C2D55ff),
             Color.black,
     };
     private static final Color[] fill = new Color[] {
