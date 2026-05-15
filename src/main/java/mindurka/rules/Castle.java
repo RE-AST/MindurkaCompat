@@ -29,11 +29,13 @@ import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
 import mindustry.ui.Fonts;
 import mindustry.world.Block;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.Prop;
 import mindustry.world.meta.Env;
 
 import java.util.Iterator;
 
-import static mindustry.Vars.state;
+import static mindustry.Vars.*;
 
 public class Castle extends Gamemode {
 
@@ -191,7 +193,7 @@ public class Castle extends Gamemode {
             write.b("rules.mindurka.castle.mirrored",       this::mirrored,       this::mirrored);
             write.b("rules.mindurka.castle.noPlatform",       this::noPlatform,       this::noPlatform);
             write.b("rules.mindurka.castle.betterGroundValid", this::betterGroundValid, this::betterGroundValid);
-            write.block("rules.mindurka.castle.shopFloor",    this::shopFloor,        this::shopFloor);
+            write.block("rules.mindurka.castle.shopFloor",    this::shopFloor,        this::shopFloor).filter(block -> block instanceof Prop || block instanceof Floor);
         }
 
         @Override
@@ -220,6 +222,10 @@ public class Castle extends Gamemode {
                 if (region != null && region.found()) {
                     Draw.rect(region, (sx + v2.x) / 2, (sy + v2.y) / 2, v2.x - sx, v2.y - sy);
                 }
+                Draw.reset();
+                Draw.color(Color.white);
+                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
+                Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
                 Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
@@ -237,10 +243,6 @@ public class Castle extends Gamemode {
                 Pools.free(layout);
                 Fonts.outline.getData().setScale(1f);
                 Fonts.outline.setColor(Color.white);
-
-                Draw.reset();
-                Draw.color(Color.white);
-                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
             }
             for (int i = 0; i < miners.size; i++) {
                 Castle.CastleMiner miner = miners.items[i];
@@ -256,14 +258,18 @@ public class Castle extends Gamemode {
                 if (region != null && region.found()) {
                     Draw.rect(region, (sx + v2.x) / 2, (sy + v2.y) / 2, v2.x - sx, v2.y - sy);
                 }
+                Draw.reset();
+                Draw.color(Color.white);
+                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
+                Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
                 Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
                 String label =
-                        Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
+                    Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.interval")+": "+miner.interval+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.amount")+": "+miner.amount+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item")+": "+miner.item;
+                        Core.bundle.get("rules.mindurka.castle.item")+": "+miner.item.emoji()+"("+miner.item+")";
                 layout.setText(Fonts.outline, label);
 
                 float cx = (sx + v2.x) / 2;
@@ -277,10 +283,8 @@ public class Castle extends Gamemode {
                 Fonts.outline.getData().setScale(1f);
                 Fonts.outline.setColor(Color.white);
 
-                Draw.reset();
-                Draw.color(Color.white);
-                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
             }
+            // TODO: Spawns render
         }
 
         private final ObjectIntMap<Block> blockCostMap = new ObjectIntMap<>();

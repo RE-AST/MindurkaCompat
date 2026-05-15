@@ -330,11 +330,11 @@ public enum EditorTool {
 
             table.label(() -> "@rules.mindurka.castle.block.cost").left().pad(6).row();
             table.field(String.valueOf(MVars.toolOptions.blockCostFor(MVars.toolOptions.current.selectedBlock)), text -> {
-                MVars.toolOptions.blockCost = Integer.parseInt(text);
+                if(!text.isEmpty())MVars.toolOptions.blockCost = Integer.parseInt(text);
             }).growX().left().row();
             table.label(() -> "@rules.status.invincible").left().pad(6).row();
             table.field(String.valueOf(MVars.toolOptions.invincible || MVars.toolOptions.current.selectedBlock instanceof Turret), text -> {
-                MVars.toolOptions.invincible = Boolean.parseBoolean(text);
+                if(!text.isEmpty())MVars.toolOptions.invincible = Boolean.parseBoolean(text);
             }).growX().left().row();
         }
 
@@ -407,10 +407,6 @@ public enum EditorTool {
             table.label(() -> "@rules.mindurka.castle.item.cost").left().pad(6).row();
             table.field(String.valueOf(MVars.toolOptions.minerCostFor(MVars.toolOptions.selectedItemCastle)), text -> {
                 MVars.toolOptions.minerCost = Integer.parseInt(text);
-            }).growX().left().row();
-            table.label(() -> "@rules.mindurka.castle.drill").left().pad(6).row();
-            table.field(String.valueOf(MVars.toolOptions.current.selectedBlock), text -> {
-                MVars.toolOptions.minerDrill = MVars.toolOptions.current.selectedBlock;
             }).growX().left().row();
             table.label(() -> "@rules.mindurka.castle.item").left().pad(6).row();
             table.table(t -> {

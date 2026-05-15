@@ -18,6 +18,7 @@ import arc.scene.event.InputListener;
 import arc.scene.event.Touchable;
 import arc.scene.ui.layout.Scl;
 import arc.struct.IntSet;
+import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.Tmp;
 import mindurka.MVars;
@@ -229,6 +230,11 @@ public class OMapView extends MapView {
                     if (mousea instanceof MouseAction.TouchDrag) {
                         if (activeTouches() == 0) mousea = null;
                         return;
+                    }
+                    if (mousea instanceof MouseAction.Cancelled) {
+                        SpecialEditorAction prev = editorAction;
+                        editorAction = null;
+                        prev.clicked(OMapView.this, x, y);
                     }
 
                     if (!isMain) return;
