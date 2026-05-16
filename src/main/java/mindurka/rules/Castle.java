@@ -16,7 +16,6 @@ import arc.util.Log;
 import arc.util.pooling.Pools;
 import arc.util.serialization.Jval;
 import mindurka.MVars;
-import mindurka.ui.OMapView;
 import mindurka.ui.RulesWrite;
 import mindurka.util.Schematic;
 import mindustry.Vars;
@@ -24,6 +23,7 @@ import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.game.Rules;
 import mindustry.game.Team;
+import mindustry.gen.Icon;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.StatusEffect;
@@ -32,6 +32,7 @@ import mindustry.ui.Fonts;
 import mindustry.world.Block;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.Prop;
+import mindustry.world.blocks.environment.SpawnBlock;
 import mindustry.world.meta.Env;
 
 import java.util.Iterator;
@@ -209,7 +210,6 @@ public class Castle extends Gamemode {
 
         @Override
         public void drawEditorGuides() {
-            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
             for (int i = 0; i < blocks.size; i++) {
                 Castle.CastleBlock block = blocks.items[i];
 
@@ -289,27 +289,14 @@ public class Castle extends Gamemode {
             TextureRegion groundUnitIcon = content.units().find(unit -> !unit.flying && !unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
             TextureRegion flyingUnitIcon = content.units().find(unit -> unit.flying && !unit.canBoost && !unit.isHidden() && !unit.isBanned()).uiIcon;
             TextureRegion navalUnit = content.units().find(unit -> unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
-            for(Point2 spawn : groundSpawn){
-                float borderX = (float) spawn.x;
-                float borderY = (float) spawn.y-6;
-                float borderX2 = (float) 1+borderX;
-                float borderY2 = 12f+borderY;
-                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
-                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
-                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
-                Draw.reset();
-                Draw.color(Color.blue);
-                Draw.scl(lineScale);
-                Lines.stroke(lineScale);
-                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
-                Draw.reset();
-                Draw.color(Color.white);
-                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
-                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
-                Draw.rect(groundUnitIcon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
-                Draw.reset();
-            }
-            for(Point2 spawn : navalSpawn){
+            drawDefenseSpawn(groundSpawn,groundUnitIcon);
+            drawDefenseSpawn(airSpawn,flyingUnitIcon);
+            drawDefenseSpawn(navalSpawn,navalUnit);
+            drawDropZones(Icon.units.getRegion());
+        }
+        private void drawDefenseSpawn(Seq<Point2> spawns, TextureRegion icon){
+            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
+            for(Point2 spawn : spawns){
                 float borderX = (float) spawn.x;
                 float borderY = (float) spawn.y-6;
                 float borderX2 = (float) 1+borderX;
@@ -325,28 +312,29 @@ public class Castle extends Gamemode {
                 Draw.color(Color.white);
                 Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
                 Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
-                Draw.rect(navalUnit,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
+                Draw.rect(icon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
                 Draw.reset();
             }
-            for(Point2 spawn : airSpawn){
-                float borderX = (float) spawn.x;
-                float borderY = (float) spawn.y-6;
-                float borderX2 = (float) 1+borderX;
-                float borderY2 = 12f+borderY;
-                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
-                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
-                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
-                Draw.reset();
-                Draw.color(Color.blue);
-                Lines.stroke(lineScale);
-                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
-                Draw.reset();
-                Draw.color(Color.white);
-                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
-                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
-                Draw.rect(flyingUnitIcon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
-                Draw.reset();
-            }
+        }
+        private void drawDropZones(TextureRegion icon){
+            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
+            world.tiles.eachTile(tile -> {
+                if(tile.overlay() instanceof SpawnBlock){
+                    Draw.reset();
+                    Draw.color(Color.scarlet);
+                    Lines.stroke(lineScale);
+                    Vec2 spawn = new Vec2(MVars.mapView.unproject((float)tile.x+0.5f,(float)tile.y+0.5f));
+                    Vec2 v3 = new Vec2(MVars.mapView.unproject(tile.x,tile.y - rc.rules.dropZoneRadius / tilesize));
+                    Lines.circle(spawn.x,spawn.y,(spawn.y - v3.y) / tilesize);
+                    Draw.reset();
+                    Draw.color(Color.white);
+                    Vec2 corner1 = new Vec2(MVars.mapView.unproject(tile.x-1.5f,tile.y-1.25f));
+                    Vec2 corner2 = MVars.mapView.unproject(tile.x+1.5f,tile.y+1.25f);
+                    float w = corner2.x - corner1.x;
+                    float h = corner2.y - corner1.y;
+                    Draw.rect(icon, spawn.x, spawn.y, w, h);
+                }
+            });
         }
 
         private final ObjectIntMap<Block> blockCostMap = new ObjectIntMap<>();
@@ -573,6 +561,7 @@ public class Castle extends Gamemode {
             rules.coreIncinerates = true;
             rules.buildCostMultiplier = 1f;
             rules.buildSpeedMultiplier = 0.5f;
+            rules.dropZoneRadius = tilesize*6f;
             rules.deconstructRefundMultiplier = 0.5f;
             rules.blockHealthMultiplier = 1f;
             rules.unitDamageMultiplier = 1f;
