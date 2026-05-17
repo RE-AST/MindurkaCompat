@@ -494,8 +494,9 @@ public class Protocol {
             Core.settings.put("mindurka.certRSApub", Util.yeet(() -> factory.getKeySpec(pair.getPublic(), X509EncodedKeySpec.class)).getEncoded());
             Core.settings.put("mindurka.certRSApriv", Util.yeet(() -> factory.getKeySpec(pair.getPrivate(), PKCS8EncodedKeySpec.class)).getEncoded());
 
-            Log.info("[MindurkaCompat] Keygen complete successfully!");
+            Log.info("[MindurkaCompat] Keygen completed successfully!");
 
+            this.pair = pair;
             keyart();
         });
     }

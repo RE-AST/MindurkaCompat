@@ -89,5 +89,7 @@ public class Injects {
         }
         if (Core.settings.getBool("mindurka.enableinput", true))
             OMobileInput.inject();
+
+        Core.atlas = MVars.atlas = new OTextureAtlas(Core.atlas);
     }
 }

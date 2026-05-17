@@ -1,6 +1,6 @@
 package mindurka;
 
-import mindurka.rules.MRules;
+import arc.util.Nullable;import mindurka.fs.FileSystem;import mindurka.rules.MRules;
 import mindurka.ui.*;
 import mindustry.Vars;
 import mindustry.editor.MapView;
@@ -18,7 +18,9 @@ public class MVars {
     public static OCustomRulesDialog customRulesDialog;
     public static ToolOptions toolOptions = new ToolOptions();
     public static Protocol protocol = new Protocol();
+    public static @Nullable FileSystem fileSystem = null;
     public static Ui ui = new Ui();
+    public static OTextureAtlas atlas;
 
     public static boolean patchEditorLoaded = false;
 
