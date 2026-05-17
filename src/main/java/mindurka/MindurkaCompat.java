@@ -2,11 +2,13 @@ package mindurka;
 
 import arc.Core;
 import arc.Events;
+import arc.scene.ui.Dialog;
 import arc.scene.ui.ScrollPane;
 import arc.scene.ui.layout.Table;
 import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.Reflect;
+import mindurka.fs.FileSystem;
 import mindurka.rules.MRules;
 import mindurka.util.Report;
 import mindustry.Vars;
@@ -15,6 +17,7 @@ import mindustry.game.EventType;
 import mindustry.gen.Icon;
 import mindustry.mod.Mods;
 import mindustry.ui.Styles;
+import mindustry.ui.dialogs.BaseDialog;
 
 import java.nio.ByteBuffer;
 
@@ -68,7 +71,7 @@ public class MindurkaCompat {
                             buttonTable.button(b -> {
                                         b.add("[accent][PE]").pad(8f).left();
                                         b.add("@patch-manager").expandX();
-                                    }, Styles.cleari, () -> Reflect.invoke(patchManager, "show")).name("patch-editor")
+                                    }, Styles.cleari, () -> Reflect.invoke(Dialog.class, patchManager, "show", Util.noargs)).name("patch-editor")
                                     .colspan(buttonTable.getColumns()).width(Float.NEGATIVE_INFINITY).growX();
 
                             buttonTable.row();
@@ -113,6 +116,8 @@ public class MindurkaCompat {
 
                 menu.button("@settings.mindurka", Icon.editor, Styles.flatt, Vars.iconMed, MVars.ui.mdSettings::show).marginLeft(8f).row();
             });
+
+            FileSystem.init();
         });
     }
 }
