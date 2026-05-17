@@ -433,20 +433,13 @@ public class OEditorDialog extends MapEditorDialog {
 
                 Table optionsTable = new Table();
                 t.add(optionsTable).left().top().row();
+                SpecialEditorAction[] lastAction = {null};
                 t.update(() -> {
+                    if (view.editorAction == lastAction[0]) return;
+                    lastAction[0] = view.editorAction;
+                    optionsTable.clear();
                     if (view.editorAction instanceof mindurka.rules.SchematicEditorAction) {
-                        mindurka.util.Schematic.Options opts =
-                            ((mindurka.rules.SchematicEditorAction) view.editorAction).getOptions();
-                        if (optionsTable.getChildren().isEmpty()) {
-                            optionsTable.defaults().left().pad(2f);
-                            optionsTable.check(Core.bundle.get("schematic.skipEmpty", "Skip empty floors"), opts.skipEmpty, v -> opts.skipEmpty = v).row();
-                            optionsTable.check(Core.bundle.get("schematic.skipAir", "Skip air blocks"), opts.skipAir, v -> opts.skipAir = v).row();
-                            optionsTable.check(Core.bundle.get("schematic.skipBuildings", "Skip buildings"), opts.skipBuildings, v -> opts.skipBuildings = v).row();
-                            optionsTable.check(Core.bundle.get("schematic.skipNoOverlay", "Skip air overlays"), opts.skipNoOverlay, v -> opts.skipNoOverlay = v).row();
-                            // TODO: Add team option.
-                        }
-                    } else {
-                        optionsTable.clear();
+                        ((mindurka.rules.SchematicEditorAction) view.editorAction).buildOptionsTable(optionsTable);
                     }
                 });
             }).grow();

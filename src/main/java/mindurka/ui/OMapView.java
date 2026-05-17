@@ -18,7 +18,6 @@ import arc.scene.event.InputListener;
 import arc.scene.event.Touchable;
 import arc.scene.ui.layout.Scl;
 import arc.struct.IntSet;
-import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.Tmp;
 import mindurka.MVars;
