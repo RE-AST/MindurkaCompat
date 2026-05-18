@@ -34,37 +34,6 @@ public enum EditorTool {
     // - Whatever feels right tbh
     // - Also undo is bound to 'z' and redo to 'Z'
 
-    // zoom(KeyCode.unset) { // Only useful on mobile. Use middle click.
-    //     @Override
-    //     public void touched(ToolContext ctx, int oldx, int oldy, int newx, int newy) {
-    //         MVars.mapView.mouseAction(MouseAction.Drag.begin(MVars.mapView.mousex(), MVars.mapView.mousey()));
-    //     }
-    // },
-    // FIXME: Replace with eraser state.
-    // eraser(KeyCode.unset) { // Only useful on mobile. Use right click.
-    //     @Override
-    //     public void start(ToolContext ctx) {
-    //         mapbits(ctx).zero();
-    //     }
-
-    //     @Override
-    //     public void touched(ToolContext ctx, int oldx, int oldy, int newx, int newy) {
-    //         if (ctx.isLayer()) ctx = EraseToolContext.i;
-
-    //         BitMap bits = mapbits(ctx);
-
-    //         final ToolContext finalCtx = ctx;
-    //         EditorTool.line(oldx, oldy, newx, newy, (x, y) -> {
-    //             EditorTool.circle(x, y, MVars.toolOptions.radius, (x$1, y$1) -> {
-    //                 if (!finalCtx.unsizedBlocks() && !(finalCtx instanceof PreviewToolContext)) {
-    //                     if (EditorTool.squareAny(x$1, y$1, MVars.toolOptions.selectedBlock.size, bits::toggled)) return;
-    //                     EditorTool.square(x$1, y$1, MVars.toolOptions.selectedBlock.size, bits::enable);
-    //                 }
-    //                 finalCtx.setAny(x$1, y$1, MVars.toolOptions.selectedBlock);
-    //             });
-    //         });
-    //     }
-    // },
     pencil(KeyCode.a) { // This is useful on not just mobile. Use left click.
         @Override
         public void start(ToolContext ctx) {

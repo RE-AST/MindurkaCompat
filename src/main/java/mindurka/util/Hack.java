@@ -22,16 +22,24 @@ public class Hack {
         Seq<Content>[] contentMap = Reflect.get(ContentLoader.class, Vars.content, "contentMap");
         ObjectMap<String, MappableContent> nameeMap = contentNameMap[original.getContentType().ordinal()];
         ObjectMap<String, MappableContent> nameMap = Reflect.get(ContentLoader.class, Vars.content, "nameMap");
+        Seq<Content> contentMapp = contentMap[original.getContentType().ordinal()];
 
         if (!nameeMap.containsKey(original.name)) throw new IllegalArgumentException("Content was not registered!");
 
         nameeMap.remove(original.name);
         nameMap.remove(original.name);
-        contentMap[original.getContentType().ordinal()].remove(original);
+        int idx = contentMapp.indexOf(original);
+        contentMapp.remove(idx);
+        if (idx == -1) throw new IllegalStateException("Fuck");
+        short id = original.id;
 
         MappableContent content = newContent.get(original.name);
         content.loadIcon();
         content.load();
+
+        contentMapp.remove(content);
+        contentMapp.insert(idx, content);
+        content.id = id;
 
         Reflect.set(ContentLoader.class, Vars.content, "currentMod", currentMod);
     }
