@@ -6,6 +6,7 @@ import mindurka.rules.Gamemode;
 import mindurka.ui.OCustomRulesDialog;
 import mindurka.ui.OEditorDialog;
 import mindurka.ui.OMapEditor;
+import mindurka.util.Hack;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
@@ -91,5 +92,6 @@ public class Injects {
             OMobileInput.inject();
 
         Core.atlas = MVars.atlas = new OTextureAtlas(Core.atlas);
+        Hack.replaceContent(Blocks.spawn, OSpawnBlock::new);
     }
 }
