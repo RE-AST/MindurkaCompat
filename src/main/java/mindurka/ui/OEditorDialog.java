@@ -429,7 +429,19 @@ public class OEditorDialog extends MapEditorDialog {
                     button.setChecked(true);
                 });
                 button.setChecked(true);
-                t.add(button).size(size, size).left().top();
+                t.add(button).size(size, size).left().top().row();
+
+                Table optionsTable = new Table();
+                t.add(optionsTable).left().top().row();
+                SpecialEditorAction[] lastAction = {null};
+                t.update(() -> {
+                    if (view.editorAction == lastAction[0]) return;
+                    lastAction[0] = view.editorAction;
+                    optionsTable.clear();
+                    if (view.editorAction instanceof mindurka.rules.SchematicEditorAction) {
+                        ((mindurka.rules.SchematicEditorAction) view.editorAction).buildOptionsTable(optionsTable);
+                    }
+                });
             }).grow();
             midOverlay.background(Tex.whiteui);
             midOverlay.setColor(Color.black);

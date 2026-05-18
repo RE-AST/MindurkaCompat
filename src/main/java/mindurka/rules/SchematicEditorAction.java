@@ -1,11 +1,14 @@
 package mindurka.rules;
 
+import arc.Core;
 import arc.func.Cons;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.geom.Point2;
 import arc.math.geom.Vec2;
 import arc.scene.ui.layout.Scl;
+import arc.scene.ui.layout.Table;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import mindurka.ui.OMapView;
 import mindurka.ui.SpecialEditorAction;
@@ -16,11 +19,19 @@ import mindustry.graphics.Pal;
 
 @RequiredArgsConstructor
 public class SchematicEditorAction implements SpecialEditorAction {
-    // TODO: Make it configurable.
-    private static final Schematic.Options OPTIONS = new Schematic.Options().skipEmpty().skipAir().skipBuildings();
-
     private final int width, height;
     private final Cons<Schematic> accepted;
+
+    @Getter
+    private final Schematic.Options options;
+
+    public SchematicEditorAction(int width, int height, Cons<Schematic> accepted) {
+        this(width, height, accepted, new Schematic.Options() {{
+            skipEmpty = true;
+            skipAir = true;
+            skipBuildings = true;
+        }});
+    }
 
     @Override
     public boolean clicked(OMapView view, float mouseX, float mouseY) {
@@ -30,12 +41,20 @@ public class SchematicEditorAction implements SpecialEditorAction {
                 || p.y >= Vars.world.height() - height) return false;
         Schematic scheme;
         try {
-            scheme = Schematic.of(Vars.world.tiles, p.x, p.y, width, height, OPTIONS);
+            scheme = Schematic.of(Vars.world.tiles, p.x, p.y, width, height, options);
         } catch (FormatException e) {
             throw new RuntimeException("Unreachable!", e);
         }
         accepted.get(scheme);
         return true;
+    }
+
+    public void buildOptionsTable(Table table) {
+        table.defaults().left().pad(2f);
+        table.check(Core.bundle.get("schematic.skipEmpty", "Skip empty floors"), options.skipEmpty, v -> options.skipEmpty = v).row();
+        table.check(Core.bundle.get("schematic.skipAir", "Skip air blocks"), options.skipAir, v -> options.skipAir = v).row();
+        table.check(Core.bundle.get("schematic.skipBuildings", "Skip buildings"), options.skipBuildings, v -> options.skipBuildings = v).row();
+        table.check(Core.bundle.get("schematic.skipNoOverlay", "Skip empty overlays"), options.skipNoOverlay, v -> options.skipNoOverlay = v).row();
     }
 
     @Override

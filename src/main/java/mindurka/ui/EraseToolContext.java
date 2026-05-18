@@ -140,6 +140,13 @@ public class EraseToolContext implements ToolContext {
     }
 
     @Override
+    public Team team(int x, int y) {
+        Tile tile = Vars.world.tiles.get(x, y);
+        if (tile == null) return Team.derelict;
+        return tile.team();
+    }
+
+    @Override
     public int width() {
         return Vars.world.width();
     }

@@ -23,17 +23,21 @@ import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.game.Rules;
 import mindustry.game.Team;
+import mindustry.gen.Icon;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
 import mindustry.ui.Fonts;
 import mindustry.world.Block;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.Prop;
+import mindustry.world.blocks.environment.SpawnBlock;
 import mindustry.world.meta.Env;
 
 import java.util.Iterator;
 
-import static mindustry.Vars.state;
+import static mindustry.Vars.*;
 
 public class Castle extends Gamemode {
 
@@ -191,7 +195,7 @@ public class Castle extends Gamemode {
             write.b("rules.mindurka.castle.mirrored",       this::mirrored,       this::mirrored);
             write.b("rules.mindurka.castle.noPlatform",       this::noPlatform,       this::noPlatform);
             write.b("rules.mindurka.castle.betterGroundValid", this::betterGroundValid, this::betterGroundValid);
-            write.block("rules.mindurka.castle.shopFloor",    this::shopFloor,        this::shopFloor);
+            write.block("rules.mindurka.castle.shopFloor",    this::shopFloor,        this::shopFloor).filter(block -> block instanceof Prop || block instanceof Floor);
         }
 
         @Override
@@ -220,6 +224,10 @@ public class Castle extends Gamemode {
                 if (region != null && region.found()) {
                     Draw.rect(region, (sx + v2.x) / 2, (sy + v2.y) / 2, v2.x - sx, v2.y - sy);
                 }
+                Draw.reset();
+                Draw.color(Color.white);
+                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
+                Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
                 Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
@@ -237,10 +245,6 @@ public class Castle extends Gamemode {
                 Pools.free(layout);
                 Fonts.outline.getData().setScale(1f);
                 Fonts.outline.setColor(Color.white);
-
-                Draw.reset();
-                Draw.color(Color.white);
-                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
             }
             for (int i = 0; i < miners.size; i++) {
                 Castle.CastleMiner miner = miners.items[i];
@@ -256,14 +260,18 @@ public class Castle extends Gamemode {
                 if (region != null && region.found()) {
                     Draw.rect(region, (sx + v2.x) / 2, (sy + v2.y) / 2, v2.x - sx, v2.y - sy);
                 }
+                Draw.reset();
+                Draw.color(Color.white);
+                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
+                Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
                 Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
                 String label =
-                        Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
+                    Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.interval")+": "+miner.interval+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.amount")+": "+miner.amount+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item")+": "+miner.item;
+                        Core.bundle.get("rules.mindurka.castle.item")+": "+miner.item.emoji()+"("+miner.item+")";
                 layout.setText(Fonts.outline, label);
 
                 float cx = (sx + v2.x) / 2;
@@ -277,10 +285,56 @@ public class Castle extends Gamemode {
                 Fonts.outline.getData().setScale(1f);
                 Fonts.outline.setColor(Color.white);
 
+            }
+            TextureRegion groundUnitIcon = content.units().find(unit -> !unit.flying && !unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            TextureRegion flyingUnitIcon = content.units().find(unit -> unit.flying && !unit.canBoost && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            TextureRegion navalUnit = content.units().find(unit -> unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            drawDefenseSpawn(groundSpawn,groundUnitIcon);
+            drawDefenseSpawn(airSpawn,flyingUnitIcon);
+            drawDefenseSpawn(navalSpawn,navalUnit);
+            drawDropZones(Icon.units.getRegion());
+        }
+        private void drawDefenseSpawn(Seq<Point2> spawns, TextureRegion icon){
+            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
+            for(Point2 spawn : spawns){
+                float borderX = (float) spawn.x;
+                float borderY = (float) spawn.y-6;
+                float borderX2 = (float) 1+borderX;
+                float borderY2 = 12f+borderY;
+                Vec2 border = new Vec2(MVars.mapView.unproject(borderX,borderY));
+                Vec2 borderParam = MVars.mapView.unproject(borderX2,borderY2);
+                Vec2 borderParamNew = new Vec2(borderParam.x - border.x,borderParam.y-border.y);
+                Draw.reset();
+                Draw.color(Color.blue);
+                Lines.stroke(lineScale);
+                Lines.rect(border.x,border.y,borderParamNew.x,borderParamNew.y);
                 Draw.reset();
                 Draw.color(Color.white);
-                Lines.rect(sx, sy, v2.x - sx, v2.y - sy);
+                Vec2 newSpawn = new Vec2(MVars.mapView.unproject(spawn.x+0.5f,spawn.y+0.5f));
+                Vec2 v1 = MVars.mapView.unproject((float)spawn.x+1.5f,(float)spawn.y+1.5f);
+                Draw.rect(icon,newSpawn.x,newSpawn.y,v1.x-newSpawn.x,v1.y-newSpawn.y,-90);
+                Draw.reset();
             }
+        }
+        private void drawDropZones(TextureRegion icon){
+            float lineScale = Core.settings.getInt("mindurka.guideslinewidth", 1);
+            world.tiles.eachTile(tile -> {
+                if(tile.overlay() instanceof SpawnBlock){
+                    Draw.reset();
+                    Draw.color(Color.scarlet);
+                    Lines.stroke(lineScale);
+                    Vec2 spawn = new Vec2(MVars.mapView.unproject((float)tile.x+0.5f,(float)tile.y+0.5f));
+                    Vec2 v3 = new Vec2(MVars.mapView.unproject(tile.x,tile.y - rc.rules.dropZoneRadius / tilesize));
+                    Lines.circle(spawn.x,spawn.y,(spawn.y - v3.y) / tilesize);
+                    Draw.reset();
+                    Draw.color(Color.white);
+                    Vec2 corner1 = new Vec2(MVars.mapView.unproject(tile.x-1.5f,tile.y-1.25f));
+                    Vec2 corner2 = MVars.mapView.unproject(tile.x+1.5f,tile.y+1.25f);
+                    float w = corner2.x - corner1.x;
+                    float h = corner2.y - corner1.y;
+                    Draw.rect(icon, spawn.x, spawn.y, w, h);
+                }
+            });
         }
 
         private final ObjectIntMap<Block> blockCostMap = new ObjectIntMap<>();
@@ -507,6 +561,7 @@ public class Castle extends Gamemode {
             rules.coreIncinerates = true;
             rules.buildCostMultiplier = 1f;
             rules.buildSpeedMultiplier = 0.5f;
+            rules.dropZoneRadius = tilesize*6f;
             rules.deconstructRefundMultiplier = 0.5f;
             rules.blockHealthMultiplier = 1f;
             rules.unitDamageMultiplier = 1f;

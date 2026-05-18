@@ -18,6 +18,7 @@ public interface ToolContext {
     Block block(int x, int y);
     Floor floor(int x, int y);
     Block overlay(int x, int y);
+    Team team(int x, int y);
 
     int width();
     int height();

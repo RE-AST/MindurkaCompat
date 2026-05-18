@@ -170,14 +170,11 @@ public class OMapView extends MapView {
                 // Krita/Voidsprite/iBIS/AnyImageEdtiorInExistence-like binds cuz they are infinitely better than
                 // whatever the fuck Anuke cooked, and you're obligated to agree.
                 if (Vars.mobile || button == KeyCode.mouseLeft) {
-                    // To be entirely fair, if your tool is zoom this is the same as zoom action.
                     if (editorAction != null) {
                         mousea = MouseAction.Draw.Cancelled.begin();
-                        SpecialEditorAction prev = editorAction;
-                        editorAction = null;
-                        dragging = false;
-                        prev.clicked(OMapView.this, x, y);
-                        redrawPreview = true;
+                        mousex = x;
+                        mousey = y;
+                        dragging = true;
                         return true;
                     } else mousea = MVars.toolOptions.mode.drawAction(x, y);
                 } else if (button == KeyCode.mouseRight) {
@@ -232,6 +229,11 @@ public class OMapView extends MapView {
                     if (mousea instanceof MouseAction.TouchDrag) {
                         if (activeTouches() == 0) mousea = null;
                         return;
+                    }
+                    if (mousea instanceof MouseAction.Cancelled) {
+                        SpecialEditorAction prev = editorAction;
+                        editorAction = null;
+                        prev.clicked(OMapView.this, x, y);
                     }
 
                     if (!isMain) return;
@@ -418,25 +420,54 @@ public class OMapView extends MapView {
                 } else MVars.toolOptions.tool.touched(previewMap, s.x, s.y, s.x, s.y);
             }
 
-            // FIXME: Potential performance penalty for drawing a ton of one-length lines
             if (previewMap.hasRegion) {
                 Draw.color(Pal.accent);
                 Lines.stroke(Scl.scl(2f));
-                for (int x = previewMap.startx; x <= previewMap.endx + 1; x++) for (int y = previewMap.starty; y <= previewMap.endy + 1; y++) {
-                    boolean enabled = previewMap.bitmap.toggled(x, y);
-                    if (enabled != previewMap.bitmap.toggled(x - 1, y)) {
-                        Vec2 s = unproject(x, y);
-                        float sx = s.x, sy = s.y;
-                        s = unproject(x, y + 1);
-                        Lines.line(sx, sy, s.x, s.y);
+
+                for (int x = previewMap.startx; x <= previewMap.endx + 1; x++) {
+                    int runStart = -1;
+                    for (int y = previewMap.starty; y <= previewMap.endy + 1; y++) {
+                        boolean border = previewMap.bitmap.toggled(x, y) != previewMap.bitmap.toggled(x - 1, y);
+                        if (border && runStart == -1) {
+                            runStart = y;
+                        } else if (!border && runStart != -1) {
+                            Vec2 s = unproject(x, runStart);
+                            float sx = s.x, sy = s.y;
+                            s = unproject(x, y);
+                            Lines.line(sx, sy, s.x, s.y);
+                            runStart = -1;
+                        }
                     }
-                    if (enabled != previewMap.bitmap.toggled(x, y - 1)) {
-                        Vec2 s = unproject(x + 1, y);
+                    if (runStart != -1) {
+                        Vec2 s = unproject(x, runStart);
                         float sx = s.x, sy = s.y;
-                        s = unproject(x, y);
+                        s = unproject(x, previewMap.endy + 2);
                         Lines.line(sx, sy, s.x, s.y);
                     }
                 }
+
+                for (int y = previewMap.starty; y <= previewMap.endy + 1; y++) {
+                    int runStart = -1;
+                    for (int x = previewMap.startx; x <= previewMap.endx + 1; x++) {
+                        boolean border = previewMap.bitmap.toggled(x, y) != previewMap.bitmap.toggled(x, y - 1);
+                        if (border && runStart == -1) {
+                            runStart = x;
+                        } else if (!border && runStart != -1) {
+                            Vec2 s = unproject(runStart, y);
+                            float sx = s.x, sy = s.y;
+                            s = unproject(x, y);
+                            Lines.line(sx, sy, s.x, s.y);
+                            runStart = -1;
+                        }
+                    }
+                    if (runStart != -1) {
+                        Vec2 s = unproject(runStart, y);
+                        float sx = s.x, sy = s.y;
+                        s = unproject(previewMap.endx + 2, y);
+                        Lines.line(sx, sy, s.x, s.y);
+                    }
+                }
+
                 Draw.reset();
             }
 

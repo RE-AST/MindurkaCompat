@@ -49,8 +49,8 @@ public class PlanetBackgroundDialog extends BaseDialog {
     private String savedTexture;
     private Texture previewTexture;
 
-    private static final float DRAG_SPEED  = 0.3f;
-    private static final float SCROLL_SPEED = 0.1f;
+    private static final float DRAG_SPEED  = 0.1f;
+    private static final float SCROLL_SPEED = 0.25f;
 
     public PlanetBackgroundDialog() {
         super("@rules.planetbackground", new DialogStyle() {{
@@ -98,7 +98,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button) {
-                if (!hasBackground() || button != KeyCode.mouseRight) return false;
+                if (!hasBackground() || button != KeyCode.mouseRight && button != KeyCode.mouseLeft) return false;
                 lastX = x;
                 lastY = y;
                 dragging = true;
@@ -119,7 +119,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
                 lastY = y;
                 if (!textureMode) {
                     rotX = Mathf.mod(rotX + dx * DRAG_SPEED, 360f);
-                    rotY = Mathf.clamp(rotY + dy * DRAG_SPEED, 1f, 179f);
+                    rotY = Mathf.clamp(rotY + dy * DRAG_SPEED*zoom/2, 1f, 179f);
                 }
                 updateParams();
             }
@@ -488,13 +488,8 @@ public class PlanetBackgroundDialog extends BaseDialog {
     }
 
     private void setup() {
-        params = state.rules.planetBackground;
-
-        if (state.rules.backgroundTexture != null && !state.rules.backgroundTexture.isEmpty()) {
-            textureMode = true;
-        } else if (params != null) {
-            textureMode = false;
-        }
+        if(!textureMode) params = state.rules.planetBackground;
+        state.rules.planetBackground = textureMode ? null : params;
 
         if (params != null) {
             zoom = params.zoom > 0f ? params.zoom : 1f;
@@ -529,16 +524,13 @@ public class PlanetBackgroundDialog extends BaseDialog {
     }
 
     private void updateParams() {
-        PlanetParams p = state.rules.planetBackground;
-        if (p != null) {
-            if (!textureMode) {
-                p.camPos = new Vec3(
-                    Mathf.cosDeg(rotX) * Mathf.sinDeg(rotY),
-                    Mathf.cosDeg(rotY),
-                    Mathf.sinDeg(rotX) * Mathf.sinDeg(rotY)
-                );
-            }
-            p.zoom = zoom;
+        if (!textureMode) {
+            PlanetParams p = state.rules.planetBackground;
+            p.camPos = new Vec3(
+                Mathf.cosDeg(rotX) * Mathf.sinDeg(rotY),
+                Mathf.cosDeg(rotY),
+                Mathf.sinDeg(rotX) * Mathf.sinDeg(rotY)
+            );
         }
         PlanetBackgroundDrawer.update();
     }

@@ -24,20 +24,16 @@ public class MVars {
 
     public static boolean patchEditorLoaded = false;
 
-    // FIXME: This is bullshit.
+    private static final BitMap[] mapbitsPool = new BitMap[2];
 
-    private static BitMap mapbits = null;
-    public static BitMap mapbits() {
-        if (mapbits == null || mapbits.width != Vars.world.width() || mapbits.height != Vars.world.height()) {
-            mapbits = BitMap.of(Vars.world.tiles);
+    private static BitMap mapbits(int index) {
+        BitMap b = mapbitsPool[index];
+        if (b == null || b.width != Vars.world.width() || b.height != Vars.world.height()) {
+            mapbitsPool[index] = b = BitMap.of(Vars.world.tiles);
         }
-        return mapbits;
+        return b;
     }
-    private static BitMap mapbits2 = null;
-    public static BitMap mapbits2() {
-        if (mapbits2 == null || mapbits2.width != Vars.world.width() || mapbits2.height != Vars.world.height()) {
-            mapbits2 = BitMap.of(Vars.world.tiles);
-        }
-        return mapbits2;
-    }
+
+    public static BitMap mapbits() { return mapbits(0); }
+    public static BitMap mapbits2() { return mapbits(1); }
 }
