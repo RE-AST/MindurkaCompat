@@ -124,7 +124,7 @@ public class Castle extends Gamemode {
                             int amount = obj.get("amount").asInt();
                             int interval = obj.get("interval").asInt();
                             Block block = Vars.content.block(obj.get("block").asString());
-                            Item item = Vars.content.item(obj.get("item").asString().toLowerCase());
+                            Item item = Vars.content.item(obj.get("item").asString());
                             miners.add(new Castle.CastleMiner(block, blockX, blockY, cost,amount,interval,item));
                         } catch (Exception e) {
                             Log.err("Failed to parse miners", e);
@@ -271,7 +271,7 @@ public class Castle extends Gamemode {
                     Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.interval")+": "+miner.interval+"\n"+
                         Core.bundle.get("rules.mindurka.castle.item.amount")+": "+miner.amount+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item")+": "+miner.item.emoji()+"("+miner.item+")";
+                        Core.bundle.get("rules.mindurka.castle.item")+": "+(miner.item != null ? miner.item.emoji()+"("+miner.item+")" : "?");
                 layout.setText(Fonts.outline, label);
 
                 float cx = (sx + v2.x) / 2;
@@ -712,7 +712,7 @@ public class Castle extends Gamemode {
                 Jval.JsonMap obj = val.asObject();
                 obj.put("x", Jval.valueOf(block.x));
                 obj.put("y", Jval.valueOf(block.y));
-                obj.put("block", Jval.valueOf(String.valueOf(block.block)));
+                obj.put("block", Jval.valueOf(block.block.name));
                 obj.put("cost", Jval.valueOf(block.cost));
                 obj.put("invincible", Jval.valueOf(block.invincible));
                 array.add(val);
@@ -738,11 +738,11 @@ public class Castle extends Gamemode {
                 Jval.JsonMap obj = val.asObject();
                 obj.put("x", Jval.valueOf(miner.x));
                 obj.put("y", Jval.valueOf(miner.y));
-                obj.put("block", Jval.valueOf(String.valueOf(miner.block)));
+                obj.put("block", Jval.valueOf(miner.block.name));
                 obj.put("cost", Jval.valueOf(miner.cost));
                 obj.put("amount", Jval.valueOf(miner.amount));
                 obj.put("interval", Jval.valueOf(miner.interval));
-                obj.put("item", Jval.valueOf(String.valueOf(miner.item)));
+                obj.put("item", Jval.valueOf(miner.item.name));
                 array.add(val);
             }
             Vars.state.rules.tags.put(MINERS, array.toString());
