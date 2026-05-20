@@ -30,10 +30,13 @@ import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
 import mindustry.ui.Fonts;
 import mindustry.world.Block;
+import mindustry.world.blocks.defense.turrets.Turret;
+import mindustry.world.blocks.distribution.Sorter;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.Prop;
 import mindustry.world.blocks.environment.SpawnBlock;
 import mindustry.world.meta.Env;
+import mindustry.game.MapObjectives;
 
 import java.util.Iterator;
 
@@ -196,6 +199,8 @@ public class Castle extends Gamemode {
             write.b("rules.mindurka.castle.noPlatform",       this::noPlatform,       this::noPlatform);
             write.b("rules.mindurka.castle.betterGroundValid", this::betterGroundValid, this::betterGroundValid);
             write.block("rules.mindurka.castle.shopFloor",    this::shopFloor,        this::shopFloor).filter(block -> block instanceof Prop || block instanceof Floor);
+            write.spacer();
+            write.button("rules.mindurka.castle.autoPort", this::autoPort);
         }
 
         @Override
@@ -542,6 +547,138 @@ public class Castle extends Gamemode {
                     || item == Items.carbide || item == Items.fissileMatter || item == Items.dormantCyst) return Blocks.impactDrill;
 
             return state.rules.hasEnv(Env.scorching) ? Blocks.impactDrill : Blocks.laserDrill;
+        }
+
+        public void autoPort() {
+            while (blocks.size > 0) blocks.remove(0);
+            while (miners.size > 0) miners.remove(0);
+
+            Vars.world.tiles.eachTile(tile -> {
+                if (!tile.isCenter()) return;
+                Block block = tile.block();
+                if (block == Blocks.air) return;
+
+                if (block instanceof Turret) {
+                    int cost = blockCostFor(block);
+                    int bx = tile.x + (block.size % 2 == 0 ? 1 : 0);
+                    int by = tile.y + (block.size % 2 == 0 ? 1 : 0);
+                    blocks.addUnique(new CastleBlock(block, bx, by, cost, true));
+                    tile.setBlock(Blocks.air);
+                } else if (block instanceof Sorter && tile.build instanceof Sorter.SorterBuild) {
+                    Item item = ((Sorter.SorterBuild) tile.build).sortItem;
+                    if (item != null) {
+                        Block drill = drillFor(item);
+                        int bx = tile.x + (drill.size % 2 == 0 ? 1 : 0);
+                        int by = tile.y + (drill.size % 2 == 0 ? 1 : 0);
+                        CastleCosts.ItemData d = CastleCosts.items.get(item);
+                        int cost = d != null ? d.cost() : 0;
+                        int amount = d != null ? d.amount() : 48;
+                        int interval = d != null ? d.interval() : 300;
+                        miners.addUnique(new CastleMiner(drill, bx, by, cost, amount, interval, item));
+                        tile.setBlock(Blocks.air);
+                    }
+                }
+            });
+            saveBlocks();
+            saveMiners();
+
+            for (MapObjectives.MapObjective obj : rc.rules.objectives) {
+                if (!(obj instanceof MapObjectives.FlagObjective)) continue;
+                MapObjectives.FlagObjective flag = (MapObjectives.FlagObjective) obj;
+                String flagName = flag.flag != null ? flag.flag.toLowerCase() : "";
+                String combined = (flag.details != null ? flag.details : "") + "\n"
+                        + (flag.text != null ? flag.text : "") + "\n" + flagName;
+
+                if (anyLineContains(combined, "noplatform")) {
+                    noPlatform(true);
+                }
+
+                if (flagName.startsWith("platformsource ")) {
+                    try {
+                        String[] args = flagName.split(" ");
+                        int x = Integer.parseInt(args[1]);
+                        int y = Integer.parseInt(args[2]);
+                        Schematic scheme = Schematic.of(Vars.world.tiles, x, y, PLATFORM_SIZE + 1, PLATFORM_SIZE + 1);
+                        addPlatformSource(scheme);
+                    } catch (Exception e) {
+                        Log.warn("Failed to load custom platform: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("shopfloor ")) {
+                    try {
+                        String[] args = flagName.split(" ");
+                        Block floor = Vars.content.block(args[1]);
+                        if (floor instanceof Floor) shopFloor(floor);
+                    } catch (Exception e) {
+                        Log.warn("Failed to set custom shop floor: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("landspawn ")) {
+                    try {
+                        String[] args = flagName.split(" ");
+                        Seq<Point2> spawns = groundSpawn() != null ? groundSpawn() : new Seq<>();
+                        spawns.add(new Point2(Short.parseShort(args[1]), Short.parseShort(args[2])));
+                        groundSpawn(spawns);
+                    } catch (Exception e) {
+                        Log.warn("Failed to set land spawn: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("airspawn ")) {
+                    try {
+                        String[] args = flagName.split(" ");
+                        Seq<Point2> spawns = airSpawn() != null ? airSpawn() : new Seq<>();
+                        spawns.add(new Point2(Short.parseShort(args[1]), Short.parseShort(args[2])));
+                        airSpawn(spawns);
+                    } catch (Exception e) {
+                        Log.warn("Failed to set air spawn: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("boatspawn ")) {
+                    try {
+                        String[] args = flagName.split(" ");
+                        Seq<Point2> spawns = navalSpawn() != null ? navalSpawn() : new Seq<>();
+                        spawns.add(new Point2(Short.parseShort(args[1]), Short.parseShort(args[2])));
+                        navalSpawn(spawns);
+                    } catch (Exception e) {
+                        Log.warn("Failed to set boat spawn: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("defensecap ")) {
+                    try {
+                        defenseUnitCap(Short.parseShort(flagName.split(" ")[1]));
+                    } catch (Exception e) {
+                        Log.warn("Failed to set defense cap: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("attackcap ")) {
+                    try {
+                        attackUnitCap(Short.parseShort(flagName.split(" ")[1]));
+                    } catch (Exception e) {
+                        Log.warn("Failed to set attack cap: " + e);
+                    }
+                }
+
+                if (flagName.startsWith("isdividecap ")) {
+                    try {
+                        divideCap(Integer.parseInt(flagName.split(" ")[1]) != 0);
+                    } catch (Exception e) {
+                        Log.warn("Failed to set divide cap: " + e);
+                    }
+                }
+            }
+        }
+
+        private boolean anyLineContains(String text, String keyword) {
+            for (String line : text.split("\n")) {
+                if (line.toLowerCase().contains(keyword)) return true;
+            }
+            return false;
         }
 
         @Override
