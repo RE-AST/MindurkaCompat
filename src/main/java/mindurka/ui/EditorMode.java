@@ -25,6 +25,11 @@ public enum EditorMode {
     },
     eraser {
         @Override
+        public MouseAction drawAction(float mouseX, float mouseY) {
+            return MouseAction.Erase.begin(mouseX, mouseY, MVars.toolOptions.tool);
+        }
+
+        @Override
         public MouseAction eraseAction(float mouseX, float mouseY) {
             return MouseAction.Drag.begin(mouseX, mouseY);
         }
