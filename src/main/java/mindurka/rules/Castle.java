@@ -325,7 +325,7 @@ public class Castle extends Gamemode {
                     Lines.stroke(lineScale);
                     Vec2 spawn = new Vec2(MVars.mapView.unproject((float)tile.x+0.5f,(float)tile.y+0.5f));
                     Vec2 v3 = new Vec2(MVars.mapView.unproject(tile.x,tile.y - rc.rules.dropZoneRadius / tilesize));
-                    Lines.circle(spawn.x,spawn.y,(spawn.y - v3.y) / tilesize);
+                    Lines.circle(spawn.x,spawn.y,(spawn.y - v3.y));
                     Draw.reset();
                     Draw.color(Color.white);
                     Vec2 corner1 = new Vec2(MVars.mapView.unproject(tile.x-1.5f,tile.y-1.25f));
