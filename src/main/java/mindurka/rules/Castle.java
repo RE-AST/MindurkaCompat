@@ -598,7 +598,7 @@ public class Castle extends Gamemode {
                         String[] args = flagName.split(" ");
                         int x = Integer.parseInt(args[1]);
                         int y = Integer.parseInt(args[2]);
-                        Schematic scheme = Schematic.of(Vars.world.tiles, x, y, PLATFORM_SIZE + 1, PLATFORM_SIZE + 1);
+                        Schematic scheme = Schematic.of(Vars.world.tiles, x, y, PLATFORM_SIZE, PLATFORM_SIZE);
                         addPlatformSource(scheme);
                     } catch (Exception e) {
                         Log.warn("Failed to load custom platform: " + e);
