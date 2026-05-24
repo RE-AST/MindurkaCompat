@@ -35,9 +35,6 @@ public enum EditorMode {
         }
     },
     // TODO: Implement this thing, yes.
-    team {
-
-    },
 
     ;
 

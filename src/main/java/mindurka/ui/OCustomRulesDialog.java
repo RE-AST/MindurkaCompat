@@ -145,7 +145,6 @@ public class OCustomRulesDialog extends CustomRulesDialog {
         write.f("rules.unitbuildspeedmultiplier", () -> rules.unitBuildSpeedMultiplier, f -> rules.unitBuildSpeedMultiplier = f);
         write.f("rules.unitcostmultiplier", () -> rules.unitCostMultiplier, f -> rules.unitCostMultiplier = f);
         write.f("rules.unithealthmultiplier", () -> rules.unitHealthMultiplier, f -> rules.unitHealthMultiplier = f);
-        write.b("rules.unitammo", () -> rules.unitAmmo, b -> rules.unitAmmo = b);
         write.button("bannedunits", () -> bannedUnits.show(rules.bannedUnits));
         write.b("bannedunits.whitelist", () -> rules.unitWhitelist, b -> rules.unitWhitelist = b);
 
