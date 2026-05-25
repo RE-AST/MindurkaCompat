@@ -186,6 +186,16 @@ public class FortsPlotKindSquare extends FortsPlotKind {
             plotStates.setPlotInfo(x, y, state, team);
             try (TagWrite write = TagWrite.of(rc.rules)) { write.w(DATA, plotStates.save()); }
         }
+
+        @Override
+        public FortsPlotState getPlotState(int x, int y) {
+            return plotStates.getPlotState(x, y);
+        }
+
+        @Override
+        public Team getPlotTeam(int x, int y) {
+            return plotStates.getPlotTeam(x, y);
+        }
     }
 
     @Override public String name() { return NAME; }

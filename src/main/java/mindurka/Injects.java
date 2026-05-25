@@ -2,6 +2,7 @@ package mindurka;
 
 import arc.Core;
 import mindurka.rules.FortsPlotKind;
+import mindurka.rules.FortsPlotState;
 import mindurka.rules.Gamemode;
 import mindurka.ui.OCustomRulesDialog;
 import mindurka.ui.OEditorDialog;
@@ -79,6 +80,7 @@ public class Injects {
 
         Gamemode.init();
         FortsPlotKind.init();
+        FortsPlotState.registerColors();
 
         if (Core.settings.getBool("mindurka.enableeditor", true)) {
             MVars.oldMapView = Vars.ui.editor.getView();

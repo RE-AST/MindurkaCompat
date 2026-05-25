@@ -165,17 +165,30 @@ public class FortsRectangularStates {
         }
     }
 
-    public void setPlotInfo(int x, int y, FortsPlotState state, Team team) {
-        if (x < startX || y < startY) return;
+    private int plotIndex(int x, int y) {
+        if (x < startX || y < startY) return -1;
         int plotX = (x - startX) / jX;
         int plotY = (y - startY) / jY;
-        if (plotX >= plotsX || plotY >= plotsY) return;
-        if ((x - startX) % jX >= width || (y - startY) % jY >= height) return;
+        if (plotX >= plotsX || plotY >= plotsY) return -1;
+        if ((x - startX) % jX >= width || (y - startY) % jY >= height) return -1;
+        return plotX + plotY * plotsX;
+    }
 
-        int i = plotX + plotY * plotsX;
-
+    public void setPlotInfo(int x, int y, FortsPlotState state, Team team) {
+        int i = plotIndex(x, y);
+        if (i < 0) return;
         states[i] = state;
         teams[i] = team;
+    }
+
+    public FortsPlotState getPlotState(int x, int y) {
+        int i = plotIndex(x, y);
+        return i < 0 ? null : states[i];
+    }
+
+    public Team getPlotTeam(int x, int y) {
+        int i = plotIndex(x, y);
+        return i < 0 ? null : teams[i];
     }
 
     public String save() {

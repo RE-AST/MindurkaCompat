@@ -22,6 +22,8 @@ public abstract class FortsPlotKind {
         public abstract void writeTeamRules(Team team, RulesWrite write);
         public abstract void drawEditorGuides();
         public abstract void setPlotInfo(int x, int y, FortsPlotState state, Team team);
+        public abstract FortsPlotState getPlotState(int x, int y);
+        public abstract Team getPlotTeam(int x, int y);
         public abstract void onStart();
         public abstract void editingResumed();
         public abstract void save();
@@ -53,6 +55,8 @@ public abstract class FortsPlotKind {
                             @Override public void writeTeamRules(Team team, RulesWrite write) {}
                             @Override public void drawEditorGuides() {}
                             @Override public void setPlotInfo(int x, int y, FortsPlotState state, Team team) {}
+                            @Override public FortsPlotState getPlotState(int x, int y) { return null; }
+                            @Override public Team getPlotTeam(int x, int y) { return null; }
                             @Override public void onStart() {}
                             @Override public void editingResumed() {}
                             @Override public void save() {}

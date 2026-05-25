@@ -3,13 +3,14 @@ package mindurka.ui;
 import arc.Core;
 import arc.math.Mathf;
 import arc.math.geom.Point2;
-import arc.util.Log;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import mindurka.MVars;
+import mindurka.rules.FortsPlotState;
+import mindurka.rules.Forts;
 import mindustry.Vars;
 import mindustry.content.Blocks;
+import mindustry.game.Team;
 import mindustry.world.Tile;
 
 public abstract class MouseAction {
@@ -139,6 +140,18 @@ public abstract class MouseAction {
             if (point.x < 0 || point.y < 0) return;
             if (point.x >= Vars.world.width() || point.y >= Vars.world.width()) return;
             Tile tile = Vars.world.tile(point.x, point.y);
+
+            if (MVars.toolOptions.tool == EditorTool.fortsPlotToggle
+                    && MVars.rules.gamemode() instanceof Forts.Impl) {
+                Forts.Impl forts = (Forts.Impl) MVars.rules.gamemode();
+                FortsPlotState state = forts.plotKind().getPlotState(point.x, point.y);
+                Team team = forts.plotKind().getPlotTeam(point.x, point.y);
+                if (state != null) {
+                    MVars.toolOptions.fortsPlotState = state;
+                    if (team != null) MVars.toolOptions.current.team = team;
+                }
+                return;
+            }
 
             if (tile.block() != Blocks.air) MVars.toolOptions.current.selectedBlock = tile.block();
             else if (tile.overlay() != Blocks.air) MVars.toolOptions.current.selectedBlock = tile.overlay();
