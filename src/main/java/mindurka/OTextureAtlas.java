@@ -47,6 +47,12 @@ public class OTextureAtlas extends TextureAtlas {
             if (lock == null) return null;
             return new AtlasRegion(new TextureRegion(autorelease, autorelease.width, autorelease.height)) {
                 final Drawable keepalive = lock;
+
+                {
+                    pixmapRegion = new PixmapRegion(pixmap);
+                    splits = new int[] { 0, 0, 0, 0 };
+                    pads = new int[] { 0, 0, 0, 0 };
+                }
             };
         }
     }

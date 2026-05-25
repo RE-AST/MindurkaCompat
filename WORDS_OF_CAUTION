@@ -2,6 +2,8 @@ If you want to use this mod or contribute to it, beware:
 - The code is a mess
 - Things will break, especially if they're even slightly obscure
 - If there's some minor problem, you will get screamed at
+- ALWAYS watch out for functions not available on Android
+  Unless you have a really good reason, all functionality must work there too
 
 Analyze existing code.
 If there's some editor-related method, check all 3 editor classes.
