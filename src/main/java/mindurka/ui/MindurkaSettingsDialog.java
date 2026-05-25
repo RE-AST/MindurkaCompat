@@ -5,7 +5,6 @@ import arc.input.KeyCode;
 import arc.scene.ui.Dialog;
 import arc.scene.ui.Image;
 import arc.scene.ui.ScrollPane;
-import arc.scene.ui.layout.Table;
 import arc.util.Align;
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
@@ -29,6 +28,7 @@ public class MindurkaSettingsDialog extends Dialog {
         settingsTable.checkPref("mindurka.enablenet", true);
         settingsTable.checkPref("mindurka.enablechat", true);
         settingsTable.checkPref("mindurka.enableinput", true);
+        settingsTable.checkPref("mindurka.devfeatures", false);
 
         settingsTable.checkPref("mindurka.integrations.patcheditor", true);
 

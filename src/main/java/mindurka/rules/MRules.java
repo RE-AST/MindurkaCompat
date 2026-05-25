@@ -144,7 +144,9 @@ public class MRules {
     }
 
     public void writeRules(RulesWrite write) {
-        write.button("rules.mindurka.virtualfilesystem", MVars.ui.virtualFs::show);
+        if (Core.settings.getBool("mindurka.devfeatures", false)) {
+            write.button("rules.mindurka.virtualfilesystem", MVars.ui.virtualFs::show);
+        }
         write.b("rules.mindurka.overdriveignorescheat", this::overdriveIgnoresCheat, this::overdriveIgnoresCheat);
 
         {
