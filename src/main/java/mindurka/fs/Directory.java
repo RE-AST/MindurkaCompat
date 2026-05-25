@@ -92,7 +92,7 @@ public class Directory extends Entry {
         }
 
         self.contents = entries;
-        entries.forEach(x -> x.value.parent = self);
+        entries.each((k, v) -> v.parent = self);
         return self;
     }
 

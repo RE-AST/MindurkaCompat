@@ -72,7 +72,8 @@ public class FileSystem extends Directory {
 
         FileSystem self = new FileSystem();
         self.contents = entries;
-        entries.forEach(x -> x.value.parent = self);
+
+        entries.each((k, v) -> v.parent = self);
         return self;
     }
 
