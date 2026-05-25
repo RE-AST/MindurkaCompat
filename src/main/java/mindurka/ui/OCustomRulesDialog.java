@@ -209,7 +209,6 @@ public class OCustomRulesDialog extends CustomRulesDialog {
             wteam.f("rules.blockdamagemultiplier", () -> teams.blockDamageMultiplier, f -> teams.blockDamageMultiplier = f);
             wteam.spacer();
 
-            wteam.b("rules.infiniteammo", () -> teams.infiniteAmmo, b -> teams.infiniteAmmo = b);
             wteam.b("rules.cheat", () -> teams.cheat, b -> teams.cheat = b);
             wteam.b("rules.fillitems", () -> teams.fillItems, b -> teams.fillItems = b);
             wteam.spacer();
