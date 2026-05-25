@@ -12,6 +12,7 @@ import arc.struct.ByteSeq;
 import arc.struct.IntMap;
 import arc.util.Log;
 import mindurka.MVars;
+import mindurka.Util;
 import mindurka.util.Schematic;
 import mindustry.Vars;
 import mindustry.game.Team;
@@ -365,28 +366,28 @@ public class FortsRectangularStates {
 
         if (centerParts == null) return;
 
-        centerParts.forEach(x -> {
-            int plotX = x.key % plotsX;
-            int plotY = x.key / plotsX;
-            x.value.paste(Vars.world.tiles, startX + plotX * jX, startY + plotY * jY, options);
+        Util.forEach(centerParts, (key, value) -> {
+            int plotX = key % plotsX;
+            int plotY = key / plotsX;
+            value.paste(Vars.world.tiles, startX + plotX * jX, startY + plotY * jY, options);
         });
 
-        intersectionParts.forEach(x -> {
-            int plotX = x.key % (plotsX + 1);
-            int plotY = x.key / (plotsX + 1);
-            x.value.paste(Vars.world.tiles, startX + plotX * jX - wallSize, startY + plotY * jY - wallSize, options);
+        Util.forEach(intersectionParts, (key, value) -> {
+            int plotX = key % (plotsX + 1);
+            int plotY = key / (plotsX + 1);
+            value.paste(Vars.world.tiles, startX + plotX * jX - wallSize, startY + plotY * jY - wallSize, options);
         });
 
-        horizontalWalls.forEach(x -> {
-            int plotX = x.key % (plotsX + 1);
-            int plotY = x.key / (plotsX + 1);
-            x.value.paste(Vars.world.tiles, startX + plotX * jX - wallSize, startY + plotY * jY, options);
+        Util.forEach(horizontalWalls, (key, value) -> {
+            int plotX = key % (plotsX + 1);
+            int plotY = key / (plotsX + 1);
+            value.paste(Vars.world.tiles, startX + plotX * jX - wallSize, startY + plotY * jY, options);
         });
 
-        verticalWalls.forEach(x -> {
-            int plotX = x.key % plotsX;
-            int plotY = x.key / plotsX;
-            x.value.paste(Vars.world.tiles, startX + plotX * jX, startY + plotY * jY - wallSize, options);
+        Util.forEach(verticalWalls, (key, value) -> {
+            int plotX = key % plotsX;
+            int plotY = key / plotsX;
+            value.paste(Vars.world.tiles, startX + plotX * jX, startY + plotY * jY - wallSize, options);
         });
 
         centerParts = null;

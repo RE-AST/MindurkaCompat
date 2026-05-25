@@ -1,6 +1,7 @@
 package mindurka;
 
 import arc.struct.ByteSeq;
+import arc.struct.IntMap;
 import arc.util.Strings;
 
 import java.nio.ByteBuffer;
@@ -53,6 +54,18 @@ public class Util {
         x = x % a;
         if (x < 0) x = x + a;
         return x;
+    }
+
+    public interface IterateIntMap<T> {
+        void get(int key, T value);
+    }
+
+    public static <T> void forEach(IntMap<T> map, IterateIntMap<T> callback) {
+        IntMap.Keys keys = map.keys();
+        while (keys.hasNext) {
+            int key = keys.next();
+            callback.get(key, map.get(key));
+        }
     }
 
     public interface Yeet<T> {
