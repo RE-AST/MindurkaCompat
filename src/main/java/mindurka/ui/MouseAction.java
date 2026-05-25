@@ -144,6 +144,10 @@ public abstract class MouseAction {
             else if (tile.overlay() != Blocks.air) MVars.toolOptions.current.selectedBlock = tile.overlay();
             else MVars.toolOptions.current.selectedBlock = tile.floor();
 
+            if (tile.block() == Blocks.cliff) {
+                MVars.toolOptions.cliffSides = tile.data;
+            }
+
             if (tile.build != null) MVars.toolOptions.current.team = tile.team();
 
             if (MVars.toolOptions.current.selectedBlock.saveData) MVars.toolOptions.current.selectedBlock.editorPicked(tile);

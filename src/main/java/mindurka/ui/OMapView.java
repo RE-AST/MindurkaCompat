@@ -233,7 +233,7 @@ public class OMapView extends MapView {
                     if (mousea instanceof MouseAction.Cancelled) {
                         SpecialEditorAction prev = editorAction;
                         editorAction = null;
-                        prev.clicked(OMapView.this, x, y);
+                        if (prev != null) prev.clicked(OMapView.this, x, y);
                     }
 
                     if (!isMain) return;
