@@ -36,8 +36,18 @@ public class MindurkaCompat {
 
         Events.on(EventType.WorldLoadEndEvent.class, event -> {
             MVars.rules = new MRules(Vars.state.rules, Vars.world.width(), Vars.world.height());
-            if (MVars.rules.gamemode() != null && (!Core.settings.getBool("mindurka.enableeditor", true) ||
-                    MVars.mapEditor != null || !MVars.mapEditor.isLoading()) && (!Vars.net.active() || Vars.net.server())) {
+            // if (MVars.rules.gamemode() != null && (!Core.settings.getBool("mindurka.enableeditor", true) ||
+            //         MVars.mapEditor != null || !MVars.mapEditor.isLoading()) && (!Vars.net.active() || Vars.net.server())) {
+            //     Log.info("Running the bullshit.");
+            //     Log.info("Gamemode: "+(MVars.rules.gamemode()==null?"null":MVars.rules.gamemode().name()));
+            //     MVars.rules.gamemode().dataFixer();
+            //     MVars.rules.gamemode().onStart();
+            // }
+            if (MVars.rules.gamemode() != null &&
+                Core.settings.getBool("mindurka.enableeditor", true) &&
+                (!Vars.net.active() || Vars.net.server()) &&
+                (MVars.mapEditor == null || !MVars.mapEditor.isLoading())
+            ) {
                 MVars.rules.gamemode().dataFixer();
                 MVars.rules.gamemode().onStart();
             }
