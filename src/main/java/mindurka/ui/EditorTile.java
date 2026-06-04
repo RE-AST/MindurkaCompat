@@ -3,6 +3,7 @@ package mindurka.ui;
 import arc.func.Prov;
 import arc.util.Reflect;
 import mindurka.MVars;
+import mindurka.util.Hack;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.editor.EditorRenderer;
@@ -39,7 +40,9 @@ public class EditorTile extends Tile {
         if (block.saveData || overlay.saveData || floor.saveData) MVars.mapEditor.currentOp().extraData(extraData);
         MVars.mapEditor.currentOp().floor(floor, x, y);
 
+        Floor oldFloor = floor;
         floor = type;
+        Hack.blockRemoved(oldFloor, this);
         type.floorChanged(this);
 
         updateStatic();
@@ -77,6 +80,7 @@ public class EditorTile extends Tile {
 
         Vars.world.tileChanges++;
 
+        Hack.blockRemoved(prevBlock, this);
         type.blockChanged(this);
 
         op.block(prevBlock, prevCenter.x, prevCenter.y, prevTeam, prevBuild == null ? 0 : prevBuild.rotation, prevBuild);
@@ -101,6 +105,7 @@ public class EditorTile extends Tile {
         Floor oldOverlay = overlay;
         overlay = type.asFloor();
 
+        Hack.floorRemoved(oldOverlay, this);
         overlay.floorChanged(this);
         updateStatic();
 

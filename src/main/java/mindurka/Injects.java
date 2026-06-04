@@ -10,6 +10,7 @@ import mindurka.util.Hack;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
+import mindustry.mod.ClassMap;
 import mindustry.world.blocks.defense.OverdriveProjector;
 import mindustry.world.blocks.payloads.*;
 import mindustry.world.consumers.Consume;
@@ -92,6 +93,7 @@ public class Injects {
             OMobileInput.inject();
 
         Core.atlas = MVars.atlas = new OTextureAtlas(Core.atlas);
-        Hack.replaceContent(Blocks.spawn, OSpawnBlock::new);
+        Blocks.spawn = Hack.replaceContent(Blocks.spawn, OSpawnBlock::new);
+        ClassMap.classes.put("SpawnBlock", OSpawnBlock.class);
     }
 }
