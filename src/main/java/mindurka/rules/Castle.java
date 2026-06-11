@@ -230,9 +230,17 @@ public class Castle extends Gamemode {
                 Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
-                Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
-                String label =Core.bundle.get("rules.mindurka.castle.block.cost")+": "+block.cost+"\n"+
-                        Core.bundle.get("rules.status.invincible")+": "+block.invincible;
+                float blockW = v2.x - sx;
+                float blockH = v2.y - sy;
+                String label = Core.bundle.get("rules.mindurka.castle.block.cost") + ": " + block.cost + "\n" +
+                        Core.bundle.get("rules.status.invincible") + ": " + block.invincible;
+
+                Fonts.outline.getData().setScale(1f);
+                layout.setText(Fonts.outline, label);
+                float scaleX = blockW / layout.width;
+                float scaleY = blockH / layout.height;
+                float fontScale = Math.min(scaleX, scaleY) * 0.9f;
+                Fonts.outline.getData().setScale(fontScale);
                 layout.setText(Fonts.outline, label);
 
                 float cx = (sx + v2.x) / 2;
@@ -266,12 +274,20 @@ public class Castle extends Gamemode {
                 Draw.reset();
 
                 GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
-                Fonts.outline.getData().setScale(0.5f * Scl.scl(15) / (128 / MVars.mapView.zoom()));
+                float blockW = v2.x - sx;
+                float blockH = v2.y - sy;
                 String label =
-                    Core.bundle.get("rules.mindurka.castle.item.cost")+": "+miner.cost+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item.interval")+": "+miner.interval+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item.amount")+": "+miner.amount+"\n"+
-                        Core.bundle.get("rules.mindurka.castle.item")+": "+(miner.item != null ? miner.item.emoji()+"("+miner.item+")" : "?");
+                    Core.bundle.get("rules.mindurka.castle.item.cost") + ": " + miner.cost + "\n" +
+                        Core.bundle.get("rules.mindurka.castle.item.interval") + ": " + miner.interval + "\n" +
+                        Core.bundle.get("rules.mindurka.castle.item.amount") + ": " + miner.amount + "\n" +
+                        Core.bundle.get("rules.mindurka.castle.item") + ": " + (miner.item != null ? miner.item.emoji() + "(" + miner.item + ")" : "?");
+
+                Fonts.outline.getData().setScale(1f);
+                layout.setText(Fonts.outline, label);
+                float scaleX = blockW / layout.width;
+                float scaleY = blockH / layout.height;
+                float fontScale = Math.min(scaleX, scaleY) * 0.9f;
+                Fonts.outline.getData().setScale(fontScale);
                 layout.setText(Fonts.outline, label);
 
                 float cx = (sx + v2.x) / 2;

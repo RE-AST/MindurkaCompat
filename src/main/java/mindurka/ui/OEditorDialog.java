@@ -418,7 +418,10 @@ public class OEditorDialog extends MapEditorDialog {
                 mid.table(t -> blockOptions = t).top().padBottom(6).left().growX().fillX();
                 rebuildBlockOptions();
             }
-            mid.setFillParent(true);
+            ScrollPane midPane = new ScrollPane(mid, Styles.smallPane);
+            midPane.setFadeScrollBars(false);
+            midPane.setOverscroll(false, false);
+            midPane.setFillParent(true);
             Table midOverlay = new Table();
             midOverlay.table(t -> {
                 ImageButton button = new ImageButton(Icon.cancel, Styles.clearNoneTogglei);
@@ -451,7 +454,7 @@ public class OEditorDialog extends MapEditorDialog {
                 midOverlay.touchable = view.editorAction == null ? Touchable.disabled : Touchable.enabled;
             });
             midOverlay.setFillParent(true);
-            cont.stack(mid, midOverlay).margin(0).left().growY();
+            cont.stack(midPane, midOverlay).margin(0).left().growY();
 
             cont.table(t -> t.add(view).grow()).grow();
 
