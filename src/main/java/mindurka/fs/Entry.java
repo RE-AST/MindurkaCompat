@@ -51,7 +51,7 @@ public abstract class Entry {
         builder.append(entry.name);
         while (entry.parent != null) {
             entry = entry.parent;
-            Log.info(entry.getClass().getSimpleName());
+            // Log.info(entry.getClass().getSimpleName());
             builder.insert(0, "/");
             builder.insert(0, entry.name);
         }

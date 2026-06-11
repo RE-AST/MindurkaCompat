@@ -188,8 +188,9 @@ public class OEditorDialog extends MapEditorDialog {
         if (MVars.rules.gamemode() != null) MVars.rules.gamemode().editingResumed();
         lastSavedRules = null;
         lastSavedMRules = null;
-        Reflect.invoke(EditorRenderer.class, editor.renderer, "recache", Util.noargs);
         loading = false;
+        Reflect.invoke(EditorRenderer.class, editor.renderer, "recache", Util.noargs);
+        Reflect.invoke(EditorRenderer.class, editor.renderer, "recacheShadows", Util.noargs);
     }
 
     private void editInGame() {

@@ -38,7 +38,7 @@ public class FileSystem extends Directory {
             public void read(DataInput stream) throws IOException {
                 try {
                     MVars.fileSystem = FileSystem.read(stream);
-                    Log.info(Debug.print(MVars.fileSystem));
+                    // Log.info(Debug.print(MVars.fileSystem));
                 } catch (IOException e) {
                     // It may take a while but oh well.
                     try { while (true) stream.readByte(); } catch (IOException ignored) {}

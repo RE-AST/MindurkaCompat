@@ -19,12 +19,14 @@ import arc.scene.event.InputEvent;
 import arc.scene.event.InputListener;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.ButtonGroup;
+import arc.scene.ui.Dialog;
 import arc.scene.ui.ImageButton;
 import arc.scene.ui.ScrollPane;
 import arc.scene.ui.TextButton;
 import arc.scene.ui.layout.Scl;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import mindurka.MVars;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.graphics.g3d.PlanetParams;
@@ -170,17 +172,18 @@ public class PlanetBackgroundDialog extends BaseDialog {
 
     private void addPlanetButton(Planet planet, Table tb, BaseDialog dialog) {
         tb.button(planet.localizedName, Icon.planet, Styles.togglet, () -> {
+            if (params == null) addPlanetBackground();
             params.planet = planet;
             updateParams();
             dialog.hide();
         }).marginLeft(14f).padBottom(5f).width(220f).height(55f)
-          .checked(params.planet == planet)
-          .update(b -> b.setChecked(params.planet == planet))
+          .checked(params != null && params.planet == planet)
+          .update(b -> b.setChecked(params != null && params.planet == planet))
           .get().getChildren().get(1).setColor(planet.iconColor);
     }
 
     private void planetDialog() {
-        if (params == null) return;
+        // if (params == null) addPlanetBackground();
 
         BaseDialog dialog = new BaseDialog("@rules.background.selectplanet");
         dialog.cont.pane(p -> p.table(t -> {
@@ -526,7 +529,7 @@ public class PlanetBackgroundDialog extends BaseDialog {
     private void updateParams() {
         if (!textureMode) {
             PlanetParams p = state.rules.planetBackground;
-            p.camPos = new Vec3(
+            if (p != null) p.camPos = new Vec3(
                 Mathf.cosDeg(rotX) * Mathf.sinDeg(rotY),
                 Mathf.cosDeg(rotY),
                 Mathf.sinDeg(rotX) * Mathf.sinDeg(rotY)

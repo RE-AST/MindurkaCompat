@@ -2,7 +2,10 @@ package mindurka;
 
 import arc.graphics.g2d.Draw;
 import arc.math.Mathf;
+import arc.util.Log;
 import mindurka.ui.EditorTile;
+import mindurka.util.Hack;
+import mindustry.Vars;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.SpawnBlock;
 
@@ -23,5 +26,16 @@ public class OSpawnBlock extends SpawnBlock {
                         tile.drawx(), tile.drawy());
             }
         }
+    }
+
+    @Override
+    public void floorChanged(Tile tile) {
+        Vars.spawner.getSpawns().addUnique(tile);
+    }
+
+    {
+        Hack.floorRemoved(this, tile -> {
+            Vars.spawner.getSpawns().remove(tile);
+        });
     }
 }
