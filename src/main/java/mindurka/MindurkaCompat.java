@@ -121,11 +121,25 @@ public class MindurkaCompat {
                 }
             });
 
-            Vars.ui.settings.shown(() -> {
-                Table menu = Reflect.get(Vars.ui.settings, "menu");
+            Vars.ui.settings.addCategory("@settings.mindurka", Icon.editor, table -> {
+                table.checkPref("mindurka.enableeditor", true);
+                table.checkPref("mindurka.enablenet", true);
+                table.checkPref("mindurka.enablechat", true);
+                table.checkPref("mindurka.enableinput", true);
+                table.checkPref("mindurka.devfeatures", false);
 
-                menu.button("@settings.mindurka", Icon.editor, Styles.flatt, Vars.iconMed, MVars.ui.mdSettings::show).marginLeft(8f).row();
+                table.checkPref("mindurka.integrations.patcheditor", true);
+
+                table.sliderPref("mindurka.zoomsensitivity", 100, 1, 200, x -> x + "%");
+
+                table.sliderPref("mindurka.guideslinewidth", 1, 1, 20, x -> x + "px");
+                table.checkPref("mindurka.guidesoutline", false);
             });
+            // Vars.ui.settings.shown(() -> {
+            //     Table menu = Reflect.get(Vars.ui.settings, "menu");
+
+            //     menu.button("@settings.mindurka", Icon.editor, Styles.flatt, Vars.iconMed, MVars.ui.mdSettings::show).marginLeft(8f).row();
+            // });
 
             FileSystem.init();
         });

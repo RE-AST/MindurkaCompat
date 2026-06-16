@@ -195,17 +195,22 @@ public class Forts extends Gamemode {
 
             {
                 RulesWrite pwrite = write.table();
+                boolean[] safetyTrigger = new boolean[] { true };
                 refreshPlotKindRules[0] = () -> {
                     pwrite.clear();
                     plotKind().writeRules(pwrite);
 
-                    pwrite.teams("rules.teams", this::writeTeamRules, team -> !applyDamageEffects(team));
+                    safetyTrigger[0] = !safetyTrigger[0];
+                    if (safetyTrigger[0]) MVars.rules.refreshTeamRules();
+
+                    // pwrite.teams("rules.teams", this::writeTeamRules, team -> !applyDamageEffects(team));
                 };
                 refreshPlotKindRules[0].run();
             }
         }
 
-        private void writeTeamRules(Team team, RulesWrite write) {
+        @Override
+        public void writeTeamRules(RulesWrite write, Team team) {
             write.b("rules.mindurka.forts.apply_damage_effects", () -> applyDamageEffects(team), v -> applyDamageEffects(team, v));
             plotKind().writeTeamRules(team, write);
         }

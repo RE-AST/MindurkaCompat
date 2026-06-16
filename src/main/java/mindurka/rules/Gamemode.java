@@ -82,6 +82,7 @@ public abstract class Gamemode {
          * Add gamemode rules to a settings dialog.
          */
         public void writeGamemodeRules(RulesWrite write) {}
+        public void writeTeamRules(RulesWrite write, Team team) {}
         public void drawEditorGuides() {}
         public void onStart() {}
         public void editingResumed() {}

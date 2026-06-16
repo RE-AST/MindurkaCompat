@@ -5,6 +5,6 @@
     "main": "mindurka.Main",
     "description": "Mod that adds extra compatibility with Mindurka",
     "version": 2.0,
-    "minGameVersion": "155",
+    "minGameVersion": "157.1",
     "hidden": true
 }
