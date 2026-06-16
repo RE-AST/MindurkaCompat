@@ -31,8 +31,8 @@ public class MRules {
                                                                      // But it's a great legacy, so we depend on it.
     public static final String OVERDRIVE_IGNORES_CHEAT = PREFIX+".overdriveIgnoresCheat";
     public static final String TEAM_PREFIX = PREFIX+".team";
-    public static final String SERVICE_TEAM_HEAD = PREFIX+".serviceTeam.";
-    public static final String PVP_TEAM_DEATH_REQUIRED_HEAD = PREFIX+".pvpTeamDeathRequired.";
+    public static final String SERVICE_TEAM_HEAD = TEAM_PREFIX+".serviceTeam.";
+    public static final String PVP_TEAM_DEATH_REQUIRED_HEAD = TEAM_PREFIX+".pvpTeamDeathRequired.";
 
     private final Rules rules;
     private final int mapWidth, mapHeight;
