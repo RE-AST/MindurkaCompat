@@ -302,9 +302,9 @@ public class Castle extends Gamemode {
                 Fonts.outline.setColor(Color.white);
 
             }
-            TextureRegion groundUnitIcon = content.units().find(unit -> !unit.flying && !unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
-            TextureRegion flyingUnitIcon = content.units().find(unit -> unit.flying && !unit.canBoost && !unit.isHidden() && !unit.isBanned()).uiIcon;
-            TextureRegion navalUnit = content.units().find(unit -> unit.naval && !unit.isHidden() && !unit.isBanned()).uiIcon;
+            TextureRegion groundUnitIcon = content.units().find(unit -> !unit.flying && !unit.naval).uiIcon;
+            TextureRegion flyingUnitIcon = content.units().find(unit -> unit.flying && !unit.canBoost).uiIcon;
+            TextureRegion navalUnit = content.units().find(unit -> unit.naval).uiIcon;
             drawDefenseSpawn(groundSpawn,groundUnitIcon);
             drawDefenseSpawn(airSpawn,flyingUnitIcon);
             drawDefenseSpawn(navalSpawn,navalUnit);
