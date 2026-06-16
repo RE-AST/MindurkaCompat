@@ -433,7 +433,9 @@ public class OEditorDialog extends MapEditorDialog {
                     button.setChecked(true);
                 });
                 button.setChecked(true);
-                t.add(button).size(size, size).left().top().row();
+                t.table(bt -> {
+                    bt.add(button).size(size, size).left().top().center().row();
+                }).center().row();
 
                 Table optionsTable = new Table();
                 t.add(optionsTable).left().top().row();
