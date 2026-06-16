@@ -4,10 +4,12 @@ import arc.Core;
 import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.Nullable;
+import lombok.AllArgsConstructor;
 import mindurka.MVars;
 import mindurka.ui.RulesWrite;
 import mindustry.Vars;
 import mindustry.game.Rules;
+import mindustry.game.Team;
 import mindustry.mod.DataPatcher;
 
 // What I've learned:
@@ -28,16 +30,75 @@ public class MRules {
     public static final String GAMEMODE_LEGACY = "mindurkaGamemode"; // Does not use `mdrk.*` convention as it's a legacy key.
                                                                      // But it's a great legacy, so we depend on it.
     public static final String OVERDRIVE_IGNORES_CHEAT = PREFIX+".overdriveIgnoresCheat";
+    public static final String TEAM_PREFIX = PREFIX+".team";
+    public static final String SERVICE_TEAM_HEAD = PREFIX+".serviceTeam.";
+    public static final String PVP_TEAM_DEATH_REQUIRED_HEAD = PREFIX+".pvpTeamDeathRequired.";
 
     private final Rules rules;
     private final int mapWidth, mapHeight;
+    public final TeamRules[] teams = new TeamRules[256];
     public final int originalPatchVer;
+
+    private Runnable refreshTeamRules = null;
+    public void refreshTeamRules() {
+        refreshTeamRules.run();
+    }
+
+    public static class TeamRules {
+        public final Team team;
+        private final RulesContext rc;
+
+        public TeamRules(RulesContext rc, Team team) {
+            this.team = team;
+            this.rc = rc;
+
+            reset();
+        }
+
+        private boolean serviceTeam;
+        public TeamRules serviceTeam(boolean value) {
+            serviceTeam = value;
+            try (TagWrite write = TagWrite.of(rc.rules)) {
+                write.w(SERVICE_TEAM_HEAD+team.id, value);
+            }
+            return this;
+        }
+        public boolean serviceTeam() {
+            return serviceTeam;
+        }
+
+        private boolean pvpTeamDeathRequired;
+        public TeamRules pvpTeamDeathRequired(boolean value) {
+            pvpTeamDeathRequired = value;
+            try (TagWrite write = TagWrite.of(rc.rules)) {
+                write.w(PVP_TEAM_DEATH_REQUIRED_HEAD+team.id, value);
+            }
+            return this;
+        }
+        public boolean pvpTeamDeathRequired() {
+            return pvpTeamDeathRequired;
+        }
+
+        public void read() {
+            try (TagRead read = TagRead.of(rc.rules)) {
+                serviceTeam = read.r(SERVICE_TEAM_HEAD+team.id, team == Team.derelict);
+                pvpTeamDeathRequired = read.r(PVP_TEAM_DEATH_REQUIRED_HEAD+team.id, team != Team.derelict);
+            }
+        }
+
+        public void reset() {
+            serviceTeam = team == Team.derelict;
+            pvpTeamDeathRequired = team != Team.derelict;
+        }
+    }
 
     public MRules(Rules rules) { this(rules, Vars.world.width(), Vars.world.height()); }
     public MRules(Rules rules, int mapWidth, int mapHeight) {
         this.rules = rules;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
+        RulesContext rc = newRulesContext();
+        for (Team team : Team.all) teams[team.id] = new TeamRules(rc, team);
 
         {
             @Nullable String format = rules.tags.get(FORMAT);
@@ -52,8 +113,6 @@ public class MRules {
                 return;
             }
         }
-
-        RulesContext rc = newRulesContext();
 
         {
             @Nullable String gamemodeName = rules.tags.get(GAMEMODE);
@@ -82,6 +141,8 @@ public class MRules {
         try (TagRead read = TagRead.of(rc.rules)) {
             overdriveIgnoresCheat = read.r(OVERDRIVE_IGNORES_CHEAT, false);
         }
+
+        for (TeamRules team : teams) team.read();
     }
 
     private RulesContext newRulesContext() {
@@ -89,16 +150,14 @@ public class MRules {
     }
 
     private void remove() {
-        rules.tags.remove(FORMAT);
-        rules.tags.remove(GAMEMODE);
-        rules.tags.remove(GAMEMODE_LEGACY);
-        rules.tags.remove(PATCH);
-        rules.tags.remove(OVERDRIVE_IGNORES_CHEAT);
-
+        rules.tags.each((key, value) -> {
+            if (key.startsWith(PREFIX+".")) rules.tags.remove(key);
+        });
         if (gamemode != null) {
             gamemode.remove();
             gamemode = null;
         }
+        for (TeamRules team : teams) team.reset();
     }
 
     private boolean legacyServer = false;
@@ -150,8 +209,6 @@ public class MRules {
         write.b("rules.mindurka.overdriveignorescheat", this::overdriveIgnoresCheat, this::overdriveIgnoresCheat);
 
         {
-            final Runnable[] extra = new Runnable[1];
-
             write.selection("rules.title.mindurka", addItem -> {
                 addItem.add("mindurka.gamemode.none", null);
                 for (String gamemodeName : Gamemode.keys()) {
@@ -161,17 +218,25 @@ public class MRules {
                 }
             }, value -> {
                 MVars.rules.gamemode(value);
-                extra[0].run();
+                refreshTeamRules.run();
             }, MVars.rules.gamemodeFactory());
 
             {
                 RulesWrite extraWrite = write.table();
-                extra[0] = () -> {
+                refreshTeamRules = () -> {
                     extraWrite.clear();
                     @Nullable Gamemode.Impl gamemode = MVars.rules.gamemode();
-                    if (gamemode != null) gamemode.writeGamemodeRules(extraWrite);
+                    if (gamemode != null) {
+                        gamemode.writeGamemodeRules(extraWrite);
+                        extraWrite.teams("rules.mindurka.teams", (team, rulesWrite) -> {
+                            TeamRules teamRules = teams[team.id];
+                            rulesWrite.b("rules.mindurka.serviceteam", teamRules::serviceTeam, teamRules::serviceTeam);
+                            rulesWrite.b("rules.mindurka.pvpteamdeathrequired", teamRules::pvpTeamDeathRequired, teamRules::pvpTeamDeathRequired);
+                            gamemode.writeTeamRules(rulesWrite, team);
+                        },team -> team.data().cores.size != 0);
+                    }
                 };
-                extra[0].run();
+                refreshTeamRules.run();
             }
         }
     }

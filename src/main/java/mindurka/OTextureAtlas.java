@@ -212,7 +212,7 @@ public class OTextureAtlas extends TextureAtlas {
     public NinePatch createPatch(String name) { gc(); return ogAtlas.createPatch(name); }
 
     @Override
-    public ObjectSet<Texture> getTextures() { gc(); return ogAtlas.getTextures(); }
+    public ObjectSet<Texture> getTextures() { return ogAtlas.getTextures(); }
     // Literally why would you ever need this.
     @Override
     public Texture texture() { gc(); return ogAtlas.texture(); }

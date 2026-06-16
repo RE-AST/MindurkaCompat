@@ -211,6 +211,7 @@ public class OCustomRulesDialog extends CustomRulesDialog {
 
             wteam.b("rules.cheat", () -> teams.cheat, b -> teams.cheat = b);
             wteam.b("rules.fillitems", () -> teams.fillItems, b -> teams.fillItems = b);
+            wteam.b("rules.protectcores", () -> teams.protectCores, b -> teams.protectCores = b);
             wteam.spacer();
 
             wteam.b("rules.rtsai", () -> teams.rtsAi, b -> teams.rtsAi = b).enabled(() -> team != rules.defaultTeam);
